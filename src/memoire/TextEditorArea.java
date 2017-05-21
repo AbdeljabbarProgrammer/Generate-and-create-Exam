@@ -7,21 +7,33 @@ package memoire;
 
 
 import java.awt.Dimension;
+import java.awt.Event;
+import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
 import java.io.IOException;
+import javax.swing.AbstractAction;
+import javax.swing.Action;
 import javax.swing.JEditorPane;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextPane;
+import javax.swing.KeyStroke;
 import javax.swing.SizeRequirements;
 import javax.swing.event.UndoableEditEvent;
 import javax.swing.event.UndoableEditListener;
+import javax.swing.text.Document;
 import javax.swing.text.Element;
 import javax.swing.text.ParagraphView;
 import javax.swing.text.View;
 import javax.swing.text.ViewFactory;
 import javax.swing.text.html.HTMLEditorKit;
 import javax.swing.text.html.InlineView;
+import javax.swing.undo.CannotRedoException;
+import javax.swing.undo.CannotUndoException;
 import javax.swing.undo.UndoManager;
+import memoire.UndoRedo.RedoAction;
+import memoire.UndoRedo.UndoAction;
+import memoire.UndoRedo.UndoHandler;
 
 /**
  *
@@ -29,15 +41,123 @@ import javax.swing.undo.UndoManager;
  */
 public final class TextEditorArea extends javax.swing.JEditorPane{
     UndoManager UndoManager ;
+Document editorPaneDocument;
+protected UndoHandler undoHandler = new UndoHandler();
+protected UndoManager undoManager = new UndoManager();
+ UndoAction undoAction = new UndoAction();
+ RedoAction redoAction = new RedoAction();
+KeyStroke undoKeystroke = KeyStroke.getKeyStroke(KeyEvent.VK_Z, Event.META_MASK);
+KeyStroke redoKeystroke = KeyStroke.getKeyStroke(KeyEvent.VK_Y, Event.META_MASK);
+class UndoHandler implements UndoableEditListener
+{
+
+  /**
+   * Messaged when the Document has created an edit, the edit is added to
+   * <code>undoManager</code>, an instance of UndoManager.
+   */
+  public void undoableEditHappened(UndoableEditEvent e)
+  {
+    undoManager.addEdit(e.getEdit());
+    undoAction.update();
+    redoAction.update();
+  }
+}
+
+class UndoAction extends AbstractAction
+{
+  public UndoAction()
+  {
+    super("Undo");
+    setEnabled(false);
+  }
+
+  public void actionPerformed(ActionEvent e)
+  {
+    try
+    {
+      undoManager.undo();
+    }
+    catch (CannotUndoException ex)
+    {
+      // TODO deal with this
+      //ex.printStackTrace();
+    }
+    update();
+    redoAction.update();
+  }
+
+  protected void update()
+  {
+    if (undoManager.canUndo())
+    {
+      setEnabled(true);
+      putValue(Action.NAME, undoManager.getUndoPresentationName());
+    }
+    else
+    {
+      setEnabled(false);
+      putValue(Action.NAME, "Undo");
+    }
+  }
+
+       // @Override
+        /*public void actionPerformed(ActionEvent ae) {
+            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        }*/
+    }
+
+class RedoAction extends AbstractAction
+{
+  public RedoAction()
+  {
+    super("Redo");
+    setEnabled(false);
+  }
+
+  public void actionPerformed(ActionEvent e)
+  {
+    try
+    {
+      undoManager.redo();
+    }
+    catch (CannotRedoException ex)
+    {
+      // TODO deal with this
+      ex.printStackTrace();
+    }
+    update();
+    undoAction.update();
+  }
+
+  protected void update()
+  {
+    if (undoManager.canRedo())
+    {
+      setEnabled(true);
+      putValue(Action.NAME, undoManager.getRedoPresentationName());
+    }
+    else
+    {
+      setEnabled(false);
+      putValue(Action.NAME, "Redo");
+    }
+  }
+}
      public TextEditorArea()
     {
        super(); 
         //JTextPane textPane = new JTextPane();
         
         //this.setAutoscrolls(true);
-        InitializeUndoRedo();
+       // InitializeUndoRedo();
         //new JScrollPane(this);
-        setContentType("text/html");
+        this.getInputMap().put(undoKeystroke, "undoKeystroke");
+        this.getActionMap().put("undoKeystroke", undoAction);
+
+//redoAction = new RedoAction();
+        this.getInputMap().put(redoKeystroke, "redoKeystroke");
+        this.getActionMap().put("redoKeystroke", redoAction);
+        setContentType("text/HTML");
         setMinimumSize(new Dimension(0, 0)); 
         setEditorKit(new HTMLEditorKit(){ 
            @Override 
@@ -101,11 +221,15 @@ public final class TextEditorArea extends javax.swing.JEditorPane{
      super();
     InitializeUndoRedo();
     }*/
+     public void InitializeUndoRedo1(){
+       editorPaneDocument= this.getDocument();
+        editorPaneDocument.addUndoableEditListener(undoHandler);
+     }
     
-   public void InitializeUndoRedo(){
+   /*public void InitializeUndoRedo(){
      UndoManager = new UndoManager();
         getDocument().addUndoableEditListener((UndoableEditEvent e) -> {
-            UndoManager.addEdit(e.getEdit());
+            //UndoManager.addEdit(e.getEdit());
      });
     }
 
@@ -118,6 +242,10 @@ public final class TextEditorArea extends javax.swing.JEditorPane{
     public void underline()
     {
         this.requestDefaultFocus();
-    }
-    
+    }*/
+  
+  
+
+//undoAction = new UndoAction();
+
 }

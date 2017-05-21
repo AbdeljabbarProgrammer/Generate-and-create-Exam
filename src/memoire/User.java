@@ -11,6 +11,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Vector;
+import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import static memoire.Exercises.list;
 
@@ -27,6 +28,16 @@ public class User extends javax.swing.JFrame {
         initComponents();
         con= ConnectionDB.OpenConnection();
         chargeDataList();
+        setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
+         setLocationRelativeTo(this);
+         setResizable(false);
+        if(Login.id_user!=1)
+        {
+            AddUser.setEnabled(false);
+            this.DeleteUser.setEnabled(false);
+            ListUsers.setVisible(false);
+            username.setEnabled(false);
+        }
     }
 
     /**
@@ -38,23 +49,37 @@ public class User extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        jPanel1 = new javax.swing.JPanel();
+        jLabel1 = new javax.swing.JLabel();
+        password = new javax.swing.JPasswordField();
+        UpdateUser = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
         ListUsers = new javax.swing.JList<>();
+        DeleteUser = new javax.swing.JButton();
+        jLabel4 = new javax.swing.JLabel();
+        jLabel2 = new javax.swing.JLabel();
         username = new javax.swing.JTextField();
         AddUser = new javax.swing.JButton();
-        UpdateUser = new javax.swing.JButton();
-        DeleteUser = new javax.swing.JButton();
-        jLabel1 = new javax.swing.JLabel();
-        jLabel2 = new javax.swing.JLabel();
-        password = new javax.swing.JPasswordField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
-        ListUsers.setModel(new javax.swing.AbstractListModel<String>() {
-            String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
-            public int getSize() { return strings.length; }
-            public String getElementAt(int i) { return strings[i]; }
+        jPanel1.setBackground(new java.awt.Color(181, 145, 190));
+        jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "User settings", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Segoe Print", 0, 24), new java.awt.Color(141, 241, 255))); // NOI18N
+
+        jLabel1.setFont(new java.awt.Font("Tempus Sans ITC", 1, 14)); // NOI18N
+        jLabel1.setText("UserName:");
+
+        UpdateUser.setBackground(new java.awt.Color(220, 220, 220));
+        UpdateUser.setFont(new java.awt.Font("SimSun-ExtB", 0, 24)); // NOI18N
+        UpdateUser.setIcon(new javax.swing.ImageIcon(getClass().getResource("/memoire/1494998024_edit-user.png"))); // NOI18N
+        UpdateUser.setText("Update");
+        UpdateUser.setHorizontalTextPosition(javax.swing.SwingConstants.LEFT);
+        UpdateUser.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                UpdateUserActionPerformed(evt);
+            }
         });
+
         ListUsers.addListSelectionListener(new javax.swing.event.ListSelectionListener() {
             public void valueChanged(javax.swing.event.ListSelectionEvent evt) {
                 ListUsersValueChanged(evt);
@@ -62,86 +87,115 @@ public class User extends javax.swing.JFrame {
         });
         jScrollPane1.setViewportView(ListUsers);
 
-        username.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                usernameActionPerformed(evt);
-            }
-        });
-
-        AddUser.setText("Add");
-        AddUser.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                AddUserActionPerformed(evt);
-            }
-        });
-
-        UpdateUser.setText("Update");
-        UpdateUser.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                UpdateUserActionPerformed(evt);
-            }
-        });
-
+        DeleteUser.setBackground(new java.awt.Color(220, 220, 220));
+        DeleteUser.setFont(new java.awt.Font("SimSun-ExtB", 0, 24)); // NOI18N
+        DeleteUser.setIcon(new javax.swing.ImageIcon(getClass().getResource("/memoire/1494997935_list-remove-user.png"))); // NOI18N
         DeleteUser.setText("Delete");
+        DeleteUser.setHorizontalTextPosition(javax.swing.SwingConstants.LEFT);
         DeleteUser.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 DeleteUserActionPerformed(evt);
             }
         });
 
-        jLabel1.setText("UserName:");
+        jLabel4.setIcon(new javax.swing.ImageIcon(getClass().getResource("/memoire/1494997591_user_accounts_config.png"))); // NOI18N
 
-        jLabel2.setText("PassWord:");
+        jLabel2.setFont(new java.awt.Font("Tempus Sans ITC", 1, 14)); // NOI18N
+        jLabel2.setText("Password:");
+
+        username.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                usernameActionPerformed(evt);
+            }
+        });
+
+        AddUser.setBackground(new java.awt.Color(220, 220, 220));
+        AddUser.setFont(new java.awt.Font("SimSun-ExtB", 0, 24)); // NOI18N
+        AddUser.setIcon(new javax.swing.ImageIcon(getClass().getResource("/memoire/1494996809_list-add-user.png"))); // NOI18N
+        AddUser.setText("Add");
+        AddUser.setHorizontalTextPosition(javax.swing.SwingConstants.LEFT);
+        AddUser.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                AddUserActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
+        jPanel1.setLayout(jPanel1Layout);
+        jPanel1Layout.setHorizontalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel1)
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addGap(78, 78, 78)
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(username, javax.swing.GroupLayout.PREFERRED_SIZE, 448, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addGroup(jPanel1Layout.createSequentialGroup()
+                                        .addComponent(DeleteUser, javax.swing.GroupLayout.PREFERRED_SIZE, 162, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addGap(6, 6, 6)
+                                        .addComponent(UpdateUser)
+                                        .addGap(6, 6, 6)
+                                        .addComponent(AddUser)))))
+                        .addGap(196, 196, 196))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel2)
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addGap(78, 78, 78)
+                                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(password, javax.swing.GroupLayout.PREFERRED_SIZE, 448, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 448, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jLabel4)
+                        .addGap(34, 34, 34))))
+        );
+        jPanel1Layout.setVerticalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addComponent(username, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addGap(11, 11, 11)
+                                .addComponent(password, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addGap(25, 25, 25)
+                                .addComponent(jLabel4)))
+                        .addGap(50, 50, 50)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(DeleteUser, javax.swing.GroupLayout.PREFERRED_SIZE, 65, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(UpdateUser, javax.swing.GroupLayout.PREFERRED_SIZE, 65, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(AddUser, javax.swing.GroupLayout.PREFERRED_SIZE, 65, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGap(31, 31, 31)
+                        .addComponent(jLabel2))
+                    .addComponent(jLabel1)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGap(69, 69, 69)
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addContainerGap(20, Short.MAX_VALUE))
+        );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(username, javax.swing.GroupLayout.PREFERRED_SIZE, 112, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(29, 29, 29)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(26, 26, 26))
-            .addGroup(layout.createSequentialGroup()
-                .addGap(35, 35, 35)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(DeleteUser)
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addComponent(jLabel2)
-                        .addComponent(jLabel1)))
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(18, 18, 18)
-                        .addComponent(UpdateUser, javax.swing.GroupLayout.PREFERRED_SIZE, 69, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(44, 44, 44)
-                        .addComponent(AddUser))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(35, 35, 35)
-                        .addComponent(password)
-                        .addGap(35, 35, 35)))
-                .addContainerGap(120, Short.MAX_VALUE))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addGap(0, 0, Short.MAX_VALUE)
+                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, 0))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap(32, Short.MAX_VALUE)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(username, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel1))
-                        .addGap(39, 39, 39)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(jLabel2)
-                            .addComponent(password, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 82, Short.MAX_VALUE)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(DeleteUser)
-                    .addComponent(UpdateUser)
-                    .addComponent(AddUser))
-                .addGap(33, 33, 33))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(2, 2, 2))
         );
 
         pack();
@@ -154,7 +208,13 @@ public class User extends javax.swing.JFrame {
     private void AddUserActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_AddUserActionPerformed
        
         try{
-             String qeuryselect = "select Count(*) from [DB_MEMIOR].[dbo].[users] where username = ?";
+            
+                   if(username.getText().length()==0 ||password.getText().length()==0)
+                    {
+                        JOptionPane.showMessageDialog(this," UserName or password is Empty");
+                        return;
+                    }
+                    String qeuryselect = "select Count(*) from [DB_MEMIOR].[dbo].[User] where username = ?";
            
                             presta = con.prepareStatement(qeuryselect);
                             presta.setString(1,username.getText());
@@ -164,12 +224,14 @@ public class User extends javax.swing.JFrame {
                                    {
                                        if( reset.getInt(1)==0)
                                        { 
-                                           String query = "INSERT INTO [DB_MEMIOR].[dbo].[users] (username,password)values (?,?)";
+                                           String query = "INSERT INTO [DB_MEMIOR].[dbo].[User] (username,password,Role)values (?,?,?)";
                                        
                                                 presta = con.prepareStatement(query);
                                                 presta.setString(1, username.getText());
-                                                presta.setString(2, password.getText());
+                                                presta.setString(2, MD5(password.getText()));
+                                                presta.setString(3,"User");
                                                 presta.execute();
+                                                chargeDataList();
                                        }
                                        else
                                        {
@@ -185,36 +247,47 @@ public class User extends javax.swing.JFrame {
     private void UpdateUserActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_UpdateUserActionPerformed
         try
         {
-             String qeuryselect = "select Count(*) from [DB_MEMIOR].[dbo].[users] where username = ?";
+            /* String qeuryselect = "select Count(*) from [DB_MEMIOR].[dbo].[User] where username = ? and IdUser != ?";
            
                             presta = con.prepareStatement(qeuryselect);
                             presta.setString(1,username.getText());
+                            presta.setInt(2,Login.id_user);
                             reset = presta.executeQuery();
                             
                                 if (reset.next()) 
                                    {
+                                       
                                        if( reset.getInt(1)==0)
-                                       {
-                                            String query = "UPDATE [DB_MEMIOR].[dbo].[users] SET username=?, password=? where  IdUser =?";
+            
+                                       {*/
+                            if(password.getText().length()==0)
+                                {
+                                    JOptionPane.showMessageDialog(this,"password is Empty");
+                                    return;
+                                }
+                                            String query = "UPDATE [DB_MEMIOR].[dbo].[users] SET  password=? where  IdUser =?";
                                             presta = con.prepareStatement(query);
-                                            presta.setString(1, username.getText());
-                                            presta.setString(2, password.getText());
-                                            presta.setInt(3, 1/*Login.id_user*/);
-                                            presta.execute(); 
-                                       }
+                                            presta.setString(1,MD5( password.getText()));
+                                            presta.setInt(2,Login.id_user);
+                                            presta.execute();
+                                            chargeDataList();
+                                            JOptionPane.showMessageDialog(null,"The UpDate process Was SuccessFul");
+                                       /*}
                                        else
                                        {
                                             JOptionPane.showMessageDialog(null, "Username is reserved");
                                        }
-                                   }
+                                   }*/
         }
         catch(Exception e)
-        {}
+        {
+             JOptionPane.showMessageDialog(null,e.getMessage());
+        }
     }//GEN-LAST:event_UpdateUserActionPerformed
 
     private void ListUsersValueChanged(javax.swing.event.ListSelectionEvent evt) {//GEN-FIRST:event_ListUsersValueChanged
-        // TODO add your handling code here:
-        
+        username.setText(ListUsers.getSelectedValue());
+        password.setText("0000000");
     }//GEN-LAST:event_ListUsersValueChanged
 
     private void DeleteUserActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_DeleteUserActionPerformed
@@ -223,16 +296,17 @@ public class User extends javax.swing.JFrame {
            try
            {    if( ListUsers.isSelectionEmpty()==false)
                 {
-                String qeury = "Delete from [DB_MEMIOR].[dbo].[users] where username = ?";
+                    JOptionPane.showMessageDialog(null,"The Delete process Was NOT SuccessFul");
+                    return;
+                }
+                String qeury = "Delete from [DB_MEMIOR].[dbo].[User] where username = ?";
                 presta = con.prepareStatement(qeury);
                 presta.setString(1,ListUsers.getSelectedValue());
                 presta.execute();
-                JOptionPane.showMessageDialog(this, "delete");
-                }
-                else
-                {
-                    JOptionPane.showMessageDialog(this, "selected User");
-                }
+                chargeDataList();
+                JOptionPane.showMessageDialog(this, "The Delete process Was SuccessFul");
+                
+               
                 
             }
            catch(Exception e)
@@ -244,7 +318,7 @@ public void chargeDataList()
 {
      try
         {
-             String qeury = "select * from [DB_MEMIOR].[dbo].[users] where IdUser > 1 ";
+             String qeury = "select * from [DB_MEMIOR].[dbo].[user] where Role ='User'";
            
                             presta = con.prepareStatement(qeury);
                            // presta.setString(1,nameM.getText());
@@ -264,6 +338,23 @@ public void chargeDataList()
             JOptionPane.showMessageDialog(this, e.getMessage());
         }
 }
+    public String MD5(String md5)
+    {
+    try {
+        java.security.MessageDigest md = java.security.MessageDigest.getInstance("MD5");
+        byte[] array = md.digest(md5.getBytes());
+        StringBuffer sb = new StringBuffer();
+        for (int i = 0; i < array.length; ++i)
+        {
+          sb.append(Integer.toHexString((array[i] & 0xFF) | 0x100).substring(1,3));
+        }
+        return sb.toString();
+       } catch (java.security.NoSuchAlgorithmException e) 
+        {
+        }
+    return null;
+    }
+
     /**
      * @param args the command line arguments
      */
@@ -306,6 +397,8 @@ public void chargeDataList()
     private javax.swing.JButton UpdateUser;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel4;
+    private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JPasswordField password;
     private javax.swing.JTextField username;

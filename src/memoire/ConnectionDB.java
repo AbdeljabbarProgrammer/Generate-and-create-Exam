@@ -21,7 +21,7 @@ public class ConnectionDB
                       
                         Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
                         Connection Con = DriverManager.getConnection("jdbc:sqlserver:// DESKTOP-RUNV3A7\\SQLEXPRESS;Namedatabase =DB_MEMIOR;","sa","2017");
-                        JOptionPane.showMessageDialog(null,"good");
+                       
                       
                        return Con;
             }

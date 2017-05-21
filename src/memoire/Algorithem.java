@@ -40,10 +40,10 @@ public class Algorithem
           String  [][]arrayExo = new String[NumberPartie][NumberDegree];
          return arrayExo ;
     }
-public  void FillArray(String NameModule,int IDUser,int NumberPartie,int NumberDegree,String[][]arrayExo) throws SQLException
+public  void FillArray(int NumberPartie,int NumberDegree,String[][]arrayExo) throws SQLException
 {
      
-     String [] Degree = new String[]{"Easy","very easy","Average","Difficult"};
+     String [] Degree = new String[]{"Easy","Average","Difficult","very Difficult"};
     //arrayExo = new String[NumberPartie][NumberDegree];
      
      for(int i=1;i<=NumberPartie;i++)
@@ -53,18 +53,18 @@ public  void FillArray(String NameModule,int IDUser,int NumberPartie,int NumberD
             
              try{
                  
-                    String qeury = "select * from [DB_MEMIOR].[dbo].[Exercics] where DegDiff = ? and  Partie = ? and NameMod =? and UseID = ?";
+                    String qeury = "select * from [DB_MEMIOR].[dbo].[Exercise] where DegEXO = ? and  PartEXO = ? and  IDEXM = ?";
            
                     prest = con.prepareStatement(qeury);
                     prest.setString(1,Degree[j-1]);
                     prest.setInt(2,i);
-                    prest.setString(3,NameModule);
-                    prest.setInt(4,IDUser);
+                    prest.setInt(3,Exam.IDEAXM);
                     reset = prest.executeQuery();
                         if (reset.next()) 
                         {
-                            if(reset.getInt(1)!= 0)
-                                arrayExo[i-1][j-1] =reset.getString("TextExo");
+                            //if(reset.getInt(1)!= 0)
+                                arrayExo[i-1][j-1] =reset.getString("ContentEXO");
+                                System.out.print(reset.getString("ContentEXO"));
                
                         } 
                 }
@@ -89,7 +89,7 @@ public  void FillArray(String NameModule,int IDUser,int NumberPartie,int NumberD
               System.out.print(array[i][j]);
            }
        }
-       lo.FillArray("informatique",1,4,4,array);
+       lo.FillArray(4,4,array);
        for(int i=0;i<4;i++)
        {
            for(int j=0;j<4;j++)

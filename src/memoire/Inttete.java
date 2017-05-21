@@ -111,7 +111,7 @@ public class Inttete extends javax.swing.JFrame {
              pred.setString(1,nameFa.getText());
              pred.setString(2,namDep.getText());
              pred.execute();
-             Module module = new Module();
+             Exam module = new Exam();
              module.setVisible(true);
         }
         catch(Exception e)
@@ -121,7 +121,7 @@ public class Inttete extends javax.swing.JFrame {
     }//GEN-LAST:event_InsertActionPerformed
 
     private void gotomActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_gotomActionPerformed
-        Module m = new Module();
+        Exam m = new Exam();
         m.setVisible(true);
     }//GEN-LAST:event_gotomActionPerformed
 
