@@ -15,6 +15,7 @@ import java.util.Vector;
 import javax.swing.ButtonGroup;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 import net.proteanit.sql.DbUtils;
 import org.apache.poi.hslf.record.Record;
 
@@ -26,7 +27,10 @@ public class Exam extends javax.swing.JFrame {
      PreparedStatement predu;
     ButtonGroup GroupB = new ButtonGroup();
     public static String NAMEEXAM ;
+    public static int NBRPART;
     public static int  IDEAXM;
+    public static String NAMEMODULE;
+    
     
     public Exam() 
     {
@@ -34,7 +38,7 @@ public class Exam extends javax.swing.JFrame {
         con =ConnectionDB.OpenConnection();
         setLocationRelativeTo(this);
         setResizable(false);
-        this.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
+        setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
         chargeExamList();
         
         GroupB = new ButtonGroup();
@@ -81,7 +85,7 @@ public class Exam extends javax.swing.JFrame {
         jLabel3.setForeground(new java.awt.Color(47, 209, 25));
         jLabel3.setText("NumberDegree :");
 
-        nbrPar.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "1", "2", "3", "4" }));
+        nbrPar.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "2", "3", "4" }));
         nbrPar.addItemListener(new java.awt.event.ItemListener() {
             public void itemStateChanged(java.awt.event.ItemEvent evt) {
                 nbrParItemStateChanged(evt);
@@ -93,7 +97,7 @@ public class Exam extends javax.swing.JFrame {
             }
         });
 
-        NbrDeg.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "1", "2", "3", "4" }));
+        NbrDeg.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "2", "3", "4" }));
         NbrDeg.addItemListener(new java.awt.event.ItemListener() {
             public void itemStateChanged(java.awt.event.ItemEvent evt) {
                 NbrDegItemStateChanged(evt);
@@ -115,8 +119,8 @@ public class Exam extends javax.swing.JFrame {
 
         goedit.setBackground(new java.awt.Color(213, 199, 220));
         goedit.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
-        goedit.setIcon(new javax.swing.ImageIcon(getClass().getResource("/memoire/1494986489_home-05.png"))); // NOI18N
-        goedit.setText("Home Page  ");
+        goedit.setIcon(new javax.swing.ImageIcon(getClass().getResource("/memoire/1495511725_accessories-text-editor.png"))); // NOI18N
+        goedit.setText("Editor Page  ");
         goedit.setHorizontalTextPosition(javax.swing.SwingConstants.LEFT);
         goedit.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -377,8 +381,8 @@ public class Exam extends javax.swing.JFrame {
                                 String query = "INSERT INTO [DB_MEMIOR].[dbo].[Exam] (NameEXM,NbrPart,NbrDeg,DatePro,NameModule,IDUser)values (?,?,?,?,?,?)";
                                 pred = con.prepareStatement(query);
                                 pred.setString(1,NameExam.getText());
-                                pred.setInt(2,Integer.valueOf(nbrPar.getSelectedIndex()+1));
-                                pred.setInt(3,Integer.valueOf(NbrDeg.getSelectedIndex()+1));
+                                pred.setInt(2,nbrPar.getSelectedIndex()+2);
+                                pred.setInt(3,NbrDeg.getSelectedIndex()+2);
                                 pred.setDate(4, new java.sql.Date(DateEXM.getDate().getTime()));
                                 pred.setString(5,NameMod.getText());
                                 pred.setInt(6,Login.id_user);
@@ -411,11 +415,18 @@ public class Exam extends javax.swing.JFrame {
         // TODO add your handling code here:
         if(  TableEXM.getSelectionModel().isSelectionEmpty()==false)
         {
-           
+           System.out.println(NBRPART);
             Exercises exo = new Exercises();
-            exo.setVisible(true);
             
-            //this.hide();
+          exo.DisableEnable(false);
+             //ConnectDialog d = new ConnectDialog(this,Dialog.ModalityType.DOCUMENT_MODAL);
+            exo.setVisible(true);
+            this.setVisible(false);
+            
+       
+         
+           
+            
         }
         else
         {
@@ -479,10 +490,12 @@ public class Exam extends javax.swing.JFrame {
         int row =TableEXM.getSelectedRow();
         IDEAXM = Integer.valueOf(TableEXM .getModel().getValueAt(row, 0).toString());
         NAMEEXAM = TableEXM .getModel().getValueAt(row, 1).toString();
+        NBRPART = Integer.valueOf(TableEXM .getModel().getValueAt(row,5).toString());
+        NAMEMODULE = TableEXM .getModel().getValueAt(row,3).toString();
             if(EditEXM.isSelected())
             {
                 DateEXM.setDate(Date.valueOf(TableEXM .getModel().getValueAt(row, 2).toString()));
-                NameMod.setText(TableEXM .getModel().getValueAt(row,3).toString());
+                NameMod.setText(NAMEMODULE);
                 nbrPar.setSelectedIndex(Integer.valueOf(TableEXM .getModel().getValueAt(row,4).toString())-1);
             }
        }
@@ -523,8 +536,8 @@ public class Exam extends javax.swing.JFrame {
                     
                                 String query = "UPDATE [DB_MEMIOR].[dbo].[Exam]  SET  NbrPart = ?,NbrDeg = ?,DatePro = ?,NameModule  = ? where IDEXM =? and IDUser = ?";
                                 predu = con.prepareStatement(query);
-                                predu.setInt(1,Integer.valueOf(nbrPar.getSelectedIndex()+1));
-                                predu.setInt(2,Integer.valueOf(NbrDeg.getSelectedIndex()+1));
+                                predu.setInt(1,Integer.valueOf(nbrPar.getSelectedIndex()+2));
+                                predu.setInt(2,Integer.valueOf(NbrDeg.getSelectedIndex()+2));
                                 predu.setDate(3, new java.sql.Date(DateEXM.getDate().getTime()));
                                 predu.setString(4,NameMod.getText());
                                 predu.setInt(5,Exam.IDEAXM);

@@ -11,21 +11,21 @@ import javax.swing.undo.UndoableEdit;
  *
  * @author abdeljabbar
  */
-class undoManager {
+public class undoManager {
 
-    static void addEdit(UndoableEdit edit) {
+   public static void addEdit(UndoableEdit edit) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
-    static Object getRedoPresentationName() {
+   public static Object getRedoPresentationName() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
-    static boolean canRedo() {
+  public  static boolean canRedo() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
-    static void redo() {
+   public static void redo() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
     

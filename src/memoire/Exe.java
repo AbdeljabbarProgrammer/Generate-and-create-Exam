@@ -125,6 +125,7 @@ public class Exe extends javax.swing.JFrame {
         jPopupMenu9 = new javax.swing.JPopupMenu();
         popupMenu1 = new java.awt.PopupMenu();
         popupMenu2 = new java.awt.PopupMenu();
+        jMenu7 = new javax.swing.JMenu();
         jPanel1 = new javax.swing.JPanel();
         jButton4 = new javax.swing.JButton();
         jButton2 = new javax.swing.JButton();
@@ -193,6 +194,8 @@ public class Exe extends javax.swing.JFrame {
         popupMenu1.setLabel("popupMenu1");
 
         popupMenu2.setLabel("popupMenu2");
+
+        jMenu7.setText("jMenu7");
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -471,6 +474,7 @@ public class Exe extends javax.swing.JFrame {
     private javax.swing.JMenu jMenu4;
     private javax.swing.JMenu jMenu5;
     private javax.swing.JMenu jMenu6;
+    private javax.swing.JMenu jMenu7;
     private javax.swing.JMenuItem jMenuItem1;
     private javax.swing.JMenuItem jMenuItem10;
     private javax.swing.JMenuItem jMenuItem11;

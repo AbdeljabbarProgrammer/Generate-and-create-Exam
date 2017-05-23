@@ -88,7 +88,9 @@ import com.lowagie.text.HeaderFooter;
 import com.lowagie.text.html.HtmlTags;
 import com.lowagie.text.pdf.ColumnText;
 import java.awt.Dimension;
+import java.awt.Event;
 import java.awt.Scrollbar;
+import java.io.InputStreamReader;
 import java.nio.file.Files;
 import static java.time.Clock.system;
 import java.util.Vector;
@@ -97,6 +99,7 @@ import javafx.scene.control.ScrollBar;
 import javax.lang.model.util.Elements;
 import javax.swing.JEditorPane;
 import static javax.swing.text.html.HTML.Tag.P;
+import static memoire.Exam.NAMEEXAM;
 import static org.docx4j.org.xhtmlrenderer.util.Uu.p;
 import org.jsoup.Jsoup;
 import static org.jsoup.nodes.Document.OutputSettings.Syntax.html;
@@ -126,6 +129,10 @@ public final class Exercises extends javax.swing.JFrame {
     String Exoarray[][];
     String []listItem ={"Easy", "very easy", "Average", "Difficult"};
     ComboBoxModel comboBox=null;
+
+    private void close() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
     enum BulletActionType {INSERT, REMOVE};
     enum NumbersActionType {INSERT, REMOVE};
     private static final char BULLET_CHAR = '\u2022';
@@ -148,12 +155,35 @@ public final class Exercises extends javax.swing.JFrame {
     ResultSet resetInt = null;
     Connection conInt = null;
     static int indexArea;
-
+    int x = Exam.NBRPART;
+    protected UndoManager undoManager ;
+    private UndoAction undoAction = null;
+    private RedoAction redoAction = null;
+    KeyStroke undoKeystroke = KeyStroke.getKeyStroke(KeyEvent.VK_Z, Event.META_MASK);
+    KeyStroke redoKeystroke = KeyStroke.getKeyStroke(KeyEvent.VK_Y, Event.META_MASK);
+    
     public Exercises() 
     {
+        
+         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         initComponents();
         setLocationRelativeTo(this);
-       
+        NameEXM.setText(Exam.NAMEEXAM);
+        if(x==2)
+        {
+        listDeg.removeItemAt(1);
+        listDeg.removeItemAt(2);
+        NumPar.removeItemAt(2);
+        NumPar.removeItemAt(2);
+        }
+        if(x==3)
+       {
+            listDeg.removeItemAt(3);
+            NumPar.removeItemAt(3);
+       }   
+           
+        
+                
         Exoarray = new  String[4][4];
         setResizable(false);
         for(int i=0;i<4;i++)
@@ -175,7 +205,7 @@ public final class Exercises extends javax.swing.JFrame {
         groupB.add(EditExo);
         groupB.add(EditInt);
         comboBox=listDeg.getModel();
-        jButton5.addActionListener(new BulletActionListener(BulletActionType.INSERT));
+        Bullet.addActionListener(new BulletActionListener(BulletActionType.INSERT));
         //jButton6.addActionListener(new BulletActionListener(BulletActionType.REMOVE));
        
         jButton7.addActionListener(new NumbersActionListener(NumbersActionType.INSERT));
@@ -205,7 +235,7 @@ public final class Exercises extends javax.swing.JFrame {
         CutButton.setToolTipText("cut text");
         CopyButton.setToolTipText("Copy text");
         jButton8.setToolTipText("Paste text");
-        jButton9.setToolTipText("sellect All");
+        selecteAll.setToolTipText("sellect All");
         popup = new JPopupMenu();
         JMenuItem cut = new JMenuItem("Cut");
         popup.add(cut);
@@ -288,17 +318,19 @@ CStyleDocument styleDocument;
 
     public final void addEditorTextTab(String title) 
     {
-        TextEditorArea T = new TextEditorArea();
+       final TextEditorArea T = new TextEditorArea();
         JScrollPane Scroll = new JScrollPane(T);
         list.add(T);
         Scroll.setHorizontalScrollBar(null);
-        jTabbedPane1.addTab(title, Scroll);        
+        
+        jTabbedPane1.addTab(title,getContentPane().add(Scroll));        
     }
 
     public void removeSelectedTextEditorTab() {
         int selectedTabIndex = jTabbedPane1.getSelectedIndex();
         jTabbedPane1.removeTabAt(selectedTabIndex);
         list.remove(selectedTabIndex);
+        if(list.size()==0) DisableEnable(false);
     }
 
     /**
@@ -319,34 +351,34 @@ CStyleDocument styleDocument;
         jToolBar1 = new javax.swing.JToolBar();
         NewButton = new javax.swing.JButton();
         OpenButton = new javax.swing.JButton();
-        jButton6 = new javax.swing.JButton();
-        jButton3 = new javax.swing.JButton();
-        CutButton = new javax.swing.JButton();
-        CopyButton = new javax.swing.JButton();
-        jButton8 = new javax.swing.JButton();
-        jButton9 = new javax.swing.JButton();
-        Pdf = new javax.swing.JButton();
-        jButton2 = new javax.swing.JButton();
-        jButton4 = new javax.swing.JButton();
         SaveButton = new javax.swing.JButton();
         UpDate = new javax.swing.JButton();
         Delete = new javax.swing.JButton();
-        jButton5 = new javax.swing.JButton();
-        jButton1 = new javax.swing.JButton();
+        ExamButton = new javax.swing.JButton();
+        search = new javax.swing.JButton();
+        Pdf = new javax.swing.JButton();
+        image = new javax.swing.JButton();
+        CutButton = new javax.swing.JButton();
+        CopyButton = new javax.swing.JButton();
+        jButton8 = new javax.swing.JButton();
+        selecteAll = new javax.swing.JButton();
+        color = new javax.swing.JButton();
+        undrline = new javax.swing.JButton();
+        Bullet = new javax.swing.JButton();
         jButton7 = new javax.swing.JButton();
-        AddMod = new javax.swing.JButton();
-        jButton12 = new javax.swing.JButton();
-        jButton13 = new javax.swing.JButton();
+        Users = new javax.swing.JButton();
         textAlignComboBox = new javax.swing.JComboBox<>();
+        undoB = new javax.swing.JButton();
+        redoB = new javax.swing.JButton();
         jPanel1 = new javax.swing.JPanel();
         EditExo = new javax.swing.JRadioButton();
         EditInt = new javax.swing.JRadioButton();
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
-        NumPar = new javax.swing.JTextField();
         jLabel4 = new javax.swing.JLabel();
         NameEXM = new javax.swing.JTextField();
         listDeg = new javax.swing.JComboBox<>();
+        NumPar = new javax.swing.JComboBox<>();
         MenuBar = new javax.swing.JMenuBar();
         File = new javax.swing.JMenu();
         New = new javax.swing.JMenuItem();
@@ -354,7 +386,6 @@ CStyleDocument styleDocument;
         close = new javax.swing.JMenuItem();
         jSeparator1 = new javax.swing.JPopupMenu.Separator();
         save = new javax.swing.JMenuItem();
-        saveas = new javax.swing.JMenuItem();
         jSeparator2 = new javax.swing.JPopupMenu.Separator();
         exit = new javax.swing.JMenuItem();
         edit = new javax.swing.JMenu();
@@ -367,7 +398,6 @@ CStyleDocument styleDocument;
         jSeparator4 = new javax.swing.JPopupMenu.Separator();
         sellect = new javax.swing.JMenuItem();
         Format = new javax.swing.JMenu();
-        wtext = new javax.swing.JCheckBoxMenuItem();
         Font = new javax.swing.JMenuItem();
 
         jMenu3.setText("jMenu3");
@@ -408,27 +438,77 @@ CStyleDocument styleDocument;
         });
         jToolBar1.add(OpenButton);
 
-        jButton6.setIcon(new javax.swing.ImageIcon(getClass().getResource("/memoire/1495337044_Undo.png"))); // NOI18N
-        jButton6.setFocusable(false);
-        jButton6.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        jButton6.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        jButton6.addActionListener(new java.awt.event.ActionListener() {
+        SaveButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/memoire/disk_save.png"))); // NOI18N
+        SaveButton.setFocusable(false);
+        SaveButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        SaveButton.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        SaveButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton6ActionPerformed(evt);
+                SaveButtonActionPerformed(evt);
             }
         });
-        jToolBar1.add(jButton6);
+        jToolBar1.add(SaveButton);
 
-        jButton3.setIcon(new javax.swing.ImageIcon(getClass().getResource("/memoire/1495337037_Redo.png"))); // NOI18N
-        jButton3.setFocusable(false);
-        jButton3.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        jButton3.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        jButton3.addActionListener(new java.awt.event.ActionListener() {
+        UpDate.setIcon(new javax.swing.ImageIcon(getClass().getResource("/memoire/icon update.png"))); // NOI18N
+        UpDate.setFocusable(false);
+        UpDate.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        UpDate.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        UpDate.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton3ActionPerformed(evt);
+                UpDateActionPerformed(evt);
             }
         });
-        jToolBar1.add(jButton3);
+        jToolBar1.add(UpDate);
+
+        Delete.setIcon(new javax.swing.ImageIcon(getClass().getResource("/memoire/i_delete.png"))); // NOI18N
+        Delete.setFocusable(false);
+        Delete.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        Delete.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        Delete.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                DeleteActionPerformed(evt);
+            }
+        });
+        jToolBar1.add(Delete);
+
+        ExamButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/memoire/1495512178_house-home-real_estate-property-glyph.png"))); // NOI18N
+        ExamButton.setFocusable(false);
+        ExamButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        ExamButton.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        ExamButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                ExamButtonActionPerformed(evt);
+            }
+        });
+        jToolBar1.add(ExamButton);
+
+        search.setIcon(new javax.swing.ImageIcon(getClass().getResource("/memoire/search-database.png"))); // NOI18N
+        search.setFocusable(false);
+        search.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        search.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        search.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                searchActionPerformed(evt);
+            }
+        });
+        jToolBar1.add(search);
+
+        Pdf.setIcon(new javax.swing.ImageIcon(getClass().getResource("/memoire/1491732493_pdfs.png"))); // NOI18N
+        Pdf.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                PdfActionPerformed(evt);
+            }
+        });
+        jToolBar1.add(Pdf);
+
+        image.setBackground(new java.awt.Color(255, 255, 255));
+        image.setIcon(new javax.swing.ImageIcon(getClass().getResource("/memoire/icone_image.png"))); // NOI18N
+        image.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                imageActionPerformed(evt);
+            }
+        });
+        jToolBar1.add(image);
 
         CutButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/memoire/cut.png"))); // NOI18N
         CutButton.setFocusable(false);
@@ -463,91 +543,40 @@ CStyleDocument styleDocument;
         });
         jToolBar1.add(jButton8);
 
-        jButton9.setBackground(new java.awt.Color(51, 255, 51));
-        jButton9.setIcon(new javax.swing.ImageIcon(getClass().getResource("/memoire/Select All-32.png"))); // NOI18N
-        jButton9.setFocusable(false);
-        jButton9.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        jButton9.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        jButton9.addActionListener(new java.awt.event.ActionListener() {
+        selecteAll.setIcon(new javax.swing.ImageIcon(getClass().getResource("/memoire/Select All-32.png"))); // NOI18N
+        selecteAll.setFocusable(false);
+        selecteAll.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        selecteAll.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        selecteAll.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton9ActionPerformed(evt);
+                selecteAllActionPerformed(evt);
             }
         });
-        jToolBar1.add(jButton9);
+        jToolBar1.add(selecteAll);
 
-        Pdf.setIcon(new javax.swing.ImageIcon(getClass().getResource("/memoire/1491732493_pdfs.png"))); // NOI18N
-        Pdf.addActionListener(new java.awt.event.ActionListener() {
+        color.setIcon(new javax.swing.ImageIcon(getClass().getResource("/memoire/1494996356_color-line.png"))); // NOI18N
+        color.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                PdfActionPerformed(evt);
+                colorActionPerformed(evt);
             }
         });
-        jToolBar1.add(Pdf);
+        jToolBar1.add(color);
 
-        jButton2.setIcon(new javax.swing.ImageIcon(getClass().getResource("/memoire/1494996356_color-line.png"))); // NOI18N
-        jButton2.addActionListener(new java.awt.event.ActionListener() {
+        undrline.setIcon(new javax.swing.ImageIcon(getClass().getResource("/memoire/Aunder.png"))); // NOI18N
+        undrline.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton2ActionPerformed(evt);
+                undrlineActionPerformed(evt);
             }
         });
-        jToolBar1.add(jButton2);
+        jToolBar1.add(undrline);
 
-        jButton4.setBackground(new java.awt.Color(255, 255, 255));
-        jButton4.setIcon(new javax.swing.ImageIcon(getClass().getResource("/memoire/icone_image.png"))); // NOI18N
-        jButton4.addActionListener(new java.awt.event.ActionListener() {
+        Bullet.setIcon(new javax.swing.ImageIcon(getClass().getResource("/memoire/IconeBulltes_List.png"))); // NOI18N
+        Bullet.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton4ActionPerformed(evt);
+                BulletActionPerformed(evt);
             }
         });
-        jToolBar1.add(jButton4);
-
-        SaveButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/memoire/disk_save.png"))); // NOI18N
-        SaveButton.setFocusable(false);
-        SaveButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        SaveButton.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        SaveButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                SaveButtonActionPerformed(evt);
-            }
-        });
-        jToolBar1.add(SaveButton);
-
-        UpDate.setIcon(new javax.swing.ImageIcon(getClass().getResource("/memoire/icon update.png"))); // NOI18N
-        UpDate.setFocusable(false);
-        UpDate.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        UpDate.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        UpDate.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                UpDateActionPerformed(evt);
-            }
-        });
-        jToolBar1.add(UpDate);
-
-        Delete.setIcon(new javax.swing.ImageIcon(getClass().getResource("/memoire/i_delete.png"))); // NOI18N
-        Delete.setFocusable(false);
-        Delete.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        Delete.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        Delete.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                DeleteActionPerformed(evt);
-            }
-        });
-        jToolBar1.add(Delete);
-
-        jButton5.setIcon(new javax.swing.ImageIcon(getClass().getResource("/memoire/IconeBulltes_List.png"))); // NOI18N
-        jButton5.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton5ActionPerformed(evt);
-            }
-        });
-        jToolBar1.add(jButton5);
-
-        jButton1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/memoire/Aunder.png"))); // NOI18N
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
-            }
-        });
-        jToolBar1.add(jButton1);
+        jToolBar1.add(Bullet);
 
         jButton7.setIcon(new javax.swing.ImageIcon(getClass().getResource("/memoire/1494980279_number_123_1.png"))); // NOI18N
         jButton7.setMaximumSize(new java.awt.Dimension(39, 39));
@@ -561,40 +590,18 @@ CStyleDocument styleDocument;
         jToolBar1.add(jButton7);
         jButton7.getAccessibleContext().setAccessibleParent(jToolBar1);
 
-        AddMod.setIcon(new javax.swing.ImageIcon(getClass().getResource("/memoire/1494997061_010.png"))); // NOI18N
-        AddMod.setFocusable(false);
-        AddMod.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        AddMod.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        AddMod.addActionListener(new java.awt.event.ActionListener() {
+        Users.setIcon(new javax.swing.ImageIcon(getClass().getResource("/memoire/1494997061_010.png"))); // NOI18N
+        Users.setFocusable(false);
+        Users.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        Users.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        Users.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                AddModActionPerformed(evt);
+                UsersActionPerformed(evt);
             }
         });
-        jToolBar1.add(AddMod);
+        jToolBar1.add(Users);
 
-        jButton12.setIcon(new javax.swing.ImageIcon(getClass().getResource("/memoire/Module.png"))); // NOI18N
-        jButton12.setFocusable(false);
-        jButton12.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        jButton12.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        jButton12.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton12ActionPerformed(evt);
-            }
-        });
-        jToolBar1.add(jButton12);
-
-        jButton13.setIcon(new javax.swing.ImageIcon(getClass().getResource("/memoire/search-database.png"))); // NOI18N
-        jButton13.setFocusable(false);
-        jButton13.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        jButton13.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        jButton13.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton13ActionPerformed(evt);
-            }
-        });
-        jToolBar1.add(jButton13);
-
-        textAlignComboBox.setBackground(new java.awt.Color(0, 153, 153));
+        textAlignComboBox.setBackground(new java.awt.Color(205, 233, 237));
         textAlignComboBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "TextAlign", "Left", "Center", "Justified" }));
         textAlignComboBox.setMaximumSize(new java.awt.Dimension(100, 50));
         textAlignComboBox.addItemListener(new java.awt.event.ItemListener() {
@@ -608,6 +615,28 @@ CStyleDocument styleDocument;
             }
         });
         jToolBar1.add(textAlignComboBox);
+
+        undoB.setIcon(new javax.swing.ImageIcon(getClass().getResource("/memoire/1495337044_Undo.png"))); // NOI18N
+        undoB.setFocusable(false);
+        undoB.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        undoB.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        undoB.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                undoBActionPerformed(evt);
+            }
+        });
+        jToolBar1.add(undoB);
+
+        redoB.setIcon(new javax.swing.ImageIcon(getClass().getResource("/memoire/1495337037_Redo.png"))); // NOI18N
+        redoB.setFocusable(false);
+        redoB.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        redoB.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        redoB.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                redoBActionPerformed(evt);
+            }
+        });
+        jToolBar1.add(redoB);
 
         jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "Properties", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Tw Cen MT Condensed Extra Bold", 0, 36), new java.awt.Color(255, 204, 51))); // NOI18N
 
@@ -637,13 +666,6 @@ CStyleDocument styleDocument;
         jLabel2.setForeground(new java.awt.Color(153, 153, 0));
         jLabel2.setText("part:");
 
-        NumPar.setToolTipText("");
-        NumPar.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                NumParActionPerformed(evt);
-            }
-        });
-
         jLabel4.setFont(new java.awt.Font("Times New Roman", 0, 18)); // NOI18N
         jLabel4.setForeground(new java.awt.Color(153, 153, 0));
         jLabel4.setText("Name of Exam :");
@@ -657,10 +679,16 @@ CStyleDocument styleDocument;
         });
 
         listDeg.setBackground(new java.awt.Color(0, 153, 153));
+        listDeg.setForeground(new java.awt.Color(233, 234, 248));
         listDeg.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Easy", "Average", "Difficult", "very Difficult" }));
         listDeg.addItemListener(new java.awt.event.ItemListener() {
             public void itemStateChanged(java.awt.event.ItemEvent evt) {
                 listDegItemStateChanged(evt);
+            }
+        });
+        listDeg.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                listDegMouseClicked(evt);
             }
         });
         listDeg.addActionListener(new java.awt.event.ActionListener() {
@@ -669,6 +697,9 @@ CStyleDocument styleDocument;
             }
         });
 
+        NumPar.setForeground(new java.awt.Color(233, 234, 248));
+        NumPar.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "1", "2", "3", "4" }));
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -676,20 +707,21 @@ CStyleDocument styleDocument;
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 155, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(listDeg, javax.swing.GroupLayout.PREFERRED_SIZE, 113, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(EditExo)
                     .addComponent(EditInt)
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addComponent(jLabel4)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(NameEXM, javax.swing.GroupLayout.PREFERRED_SIZE, 152, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(jLabel2)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(NumPar, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 155, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                .addComponent(jLabel2, javax.swing.GroupLayout.Alignment.LEADING)
+                                .addComponent(EditExo)))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(listDeg, 0, 113, Short.MAX_VALUE)
+                            .addComponent(NumPar, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -699,18 +731,19 @@ CStyleDocument styleDocument;
                     .addComponent(jLabel4)
                     .addComponent(NameEXM, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
-                .addComponent(EditInt)
-                .addGap(7, 7, 7)
-                .addComponent(EditExo)
-                .addGap(18, 18, 18)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 18, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addComponent(EditInt)
+                        .addGap(7, 7, 7)
+                        .addComponent(EditExo)
+                        .addGap(18, 18, 18)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(listDeg, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(18, 18, 18)
+                        .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 18, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addComponent(NumPar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(18, 18, 18)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(listDeg, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(130, Short.MAX_VALUE))
+                .addContainerGap(136, Short.MAX_VALUE))
         );
 
         File.setText("File");
@@ -752,17 +785,19 @@ CStyleDocument styleDocument;
             }
         });
         File.add(save);
-
-        saveas.setText("Save As");
-        saveas.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                saveasActionPerformed(evt);
-            }
-        });
-        File.add(saveas);
         File.add(jSeparator2);
 
         exit.setText("Exit");
+        exit.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                exitMouseClicked(evt);
+            }
+        });
+        exit.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                exitActionPerformed(evt);
+            }
+        });
         File.add(exit);
 
         MenuBar.add(File);
@@ -837,14 +872,6 @@ CStyleDocument styleDocument;
             }
         });
 
-        wtext.setText("Warp text");
-        wtext.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                wtextActionPerformed(evt);
-            }
-        });
-        Format.add(wtext);
-
         Font.setText("Font");
         Font.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
@@ -866,14 +893,18 @@ CStyleDocument styleDocument;
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jToolBar1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(jToolBar1, javax.swing.GroupLayout.DEFAULT_SIZE, 1019, Short.MAX_VALUE)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(jTabbedPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 689, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, Short.MAX_VALUE)
-                .addComponent(jLabel3))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addComponent(jLabel3))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(0, 0, Short.MAX_VALUE))))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -907,14 +938,12 @@ CStyleDocument styleDocument;
         removeSelectedTextEditorTab();
     }//GEN-LAST:event_closeActionPerformed
 
-    private void saveasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveasActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_saveasActionPerformed
-
     private void NewButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_NewButtonActionPerformed
         try {
             // TODO add your handling code here:
+             DisableEnable(true);
             addEditorTextTab("New Exercise");
+           
         } catch (Exception ex) {
 
         }
@@ -963,12 +992,13 @@ CStyleDocument styleDocument;
         try {
              if(EditExo.isSelected())
                 {
-                    if(NumPar.getText().isEmpty())
-                    {
-                        JOptionPane.showMessageDialog(null, "The Parts Field is Empty");
-                        return;
-                    }
-                    int part = Integer.valueOf(NumPar.getText());
+                   // if(NumPar.getModel().SelectedItem().toString().)
+                    //{
+                       // JOptionPane.showMessageDialog(null, "The Parts Field is Empty");
+                       // return;هذا الشرط لمراقبة ادخال رقم الاجزاء
+                   // }
+                    int part =  NumPar.getSelectedIndex()+1;
+                    System.out.print(part);
                     String qeury = "select Count(*) from [DB_MEMIOR].[dbo].[Exercise] where  DegEXO = ? and PartEXO = ? and IDEXM = ? ";
                     prestInt = conInt.prepareStatement(qeury);
                     prestInt .setString(1, listDeg.getSelectedItem().toString());
@@ -1028,7 +1058,7 @@ CStyleDocument styleDocument;
                      }
                 else
                      {
-                         JOptionPane.showMessageDialog(null, "Please specify what exercise you will write or Tete");
+                         JOptionPane.showMessageDialog(null, "Please Specify What Exercise You Will Write or Head");
                      }
            
         }
@@ -1038,10 +1068,6 @@ CStyleDocument styleDocument;
         }
 
     }//GEN-LAST:event_SaveButtonActionPerformed
-
-    private void NumParActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_NumParActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_NumParActionPerformed
 
     private void editActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_editActionPerformed
         // TODO add your handling code here:
@@ -1087,7 +1113,8 @@ CStyleDocument styleDocument;
 
     private void pasteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_pasteActionPerformed
         // TODO add your handling code here:
-        list.get(jTabbedPane1.getSelectedIndex()).paste();
+        //list.get(jTabbedPane1.getSelectedIndex()).paste();
+        //GetSelectedTextPane().paste();
     }//GEN-LAST:event_pasteActionPerformed
 
     private void jButton8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton8ActionPerformed
@@ -1095,31 +1122,91 @@ CStyleDocument styleDocument;
         list.get(jTabbedPane1.getSelectedIndex()).paste();
     }//GEN-LAST:event_jButton8ActionPerformed
 
-    private void jButton9ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton9ActionPerformed
+    private void selecteAllActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_selecteAllActionPerformed
         // TODO add your handling code here:
         list.get(jTabbedPane1.getSelectedIndex()).selectAll();
-    }//GEN-LAST:event_jButton9ActionPerformed
+    }//GEN-LAST:event_selecteAllActionPerformed
 
     private void saveActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveActionPerformed
         // TODO add your handling code here:
-
-        try {
-            int par = Integer.valueOf(NumPar.getText());
-            //int name = Integer.valueOf(nameM.getText());
-            //jTabbedPane1.getSelectedIndex();
-
-            String query = "INSERT INTO [DB_MEMIOR].[dbo].[exo] (TextEXO,DegDiff,Partie,IdMod)values (?,?,?,?)";
-
-            presta = con.prepareStatement(query);
-            presta.setString(1, list.get(jTabbedPane1.getSelectedIndex()).getText());
-            presta.setString(2, listDeg.getSelectedItem().toString());
-            presta.setInt(3, par);
-            //presta.setInt(4, name);
-            presta.execute();
-            JOptionPane.showMessageDialog(null, "insert valide");
-        } catch (Exception e) {
+ try {
+             if(EditExo.isSelected())
+                {
+                   // if(NumPar.getModel().SelectedItem().toString().)
+                    //{
+                       // JOptionPane.showMessageDialog(null, "The Parts Field is Empty");
+                       // return;هذا الشرط لمراقبة ادخال رقم الاجزاء
+                   // }
+                    int part =  NumPar.getSelectedIndex()+1;
+                    System.out.print(part);
+                    String qeury = "select Count(*) from [DB_MEMIOR].[dbo].[Exercise] where  DegEXO = ? and PartEXO = ? and IDEXM = ? ";
+                    prestInt = conInt.prepareStatement(qeury);
+                    prestInt .setString(1, listDeg.getSelectedItem().toString());
+                    prestInt .setInt(2, part);
+                    prestInt .setInt(3,Exam.IDEAXM);
+                    resetInt = prestInt .executeQuery();
+                    if(resetInt.next())
+                    {
+                        if( resetInt.getInt(1)==0)
+                        {   
+                           
+                            String query = "INSERT INTO [DB_MEMIOR].[dbo].[Exercise] (ContentEXO,DegEXO,PartEXO,IDEXM)values (?,?,?,?)";
+                            prestInt  = conInt.prepareStatement(query);
+                            prestInt .setString(1, list.get(jTabbedPane1.getSelectedIndex()).getText());
+                            prestInt .setString(2, listDeg.getSelectedItem().toString());
+                            prestInt .setInt(3, part);
+                            prestInt .setInt(4,Exam.IDEAXM);
+                            prestInt .execute();
+                            JOptionPane.showMessageDialog(null, "insert valide");
+                        }
+                        else
+                        {
+                            JOptionPane.showMessageDialog(null, "The Exercise exists and you have to update it if you want to change it");
+                        }
+                    }
+             
+                }
+                else if(EditInt.isSelected())
+                     {
+                             
+                            String qeury = "select * from [DB_MEMIOR].[dbo].[Exam] where IDEXM= ? and NameEXM = ? and IDUser = ?";
+                            presta = con.prepareStatement(qeury);
+                            presta.setInt(1,Exam.IDEAXM);
+                            presta.setString(2,Exam.NAMEEXAM);
+                            presta.setInt(3,Login.id_user);
+                            reset = presta.executeQuery();
+                            
+                                if (reset.next()) 
+                                   {
+                                      
+                                            String query = "UPDATE [DB_MEMIOR].[dbo].[Exam] SET ContentInt= ? where IDEXM= ? and IDUser = ?  ";
+                                            presta = con.prepareStatement(query);
+                                            presta.setString(1, list.get(jTabbedPane1.getSelectedIndex()).getText());
+                                            presta.setInt(2,Exam.IDEAXM);
+                                            presta.setInt(3,Login.id_user);
+                                            presta.execute(); 
+                                            JOptionPane.showMessageDialog(null, "insert valide");
+                                   
+                                          
+                                    }
+                                else
+                                    {
+                                            JOptionPane.showMessageDialog(null, "Insert Not Valide");
+                                    }
+                                
+                                        
+                     }
+                else
+                     {
+                         JOptionPane.showMessageDialog(null, "Please Specify What Exercise You Will Write or Head");
+                     }
+           
+        }
+        catch (Exception e)
+        {
             JOptionPane.showMessageDialog(null, e.toString());
         }
+
 
     }//GEN-LAST:event_saveActionPerformed
 
@@ -1150,12 +1237,6 @@ CStyleDocument styleDocument;
         // TODO add your handling code here:
         list.get(jTabbedPane1.getSelectedIndex()).selectAll();
     }//GEN-LAST:event_sellectActionPerformed
-
-    private void wtextActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_wtextActionPerformed
-        // TODO add your handling code here:
-        //if(wtext.isSelected())
-        //list.get(jTabbedPane1.getSelectedIndex()).setLineWrap(true);
-    }//GEN-LAST:event_wtextActionPerformed
 
     private void FontActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_FontActionPerformed
         // TODO add your handling code here:
@@ -1193,7 +1274,7 @@ CStyleDocument styleDocument;
        
     }//GEN-LAST:event_FontActionPerformed
 
-    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+    private void colorActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_colorActionPerformed
 Color newColor =
 				JColorChooser.showDialog(this, "Choose a color", Color.BLACK);
 			if (newColor == null) {
@@ -1214,7 +1295,7 @@ StyleConstants.setForeground(atts, newColor);//Underline( atts, true );
 
 doc.setCharacterAttributes( GetSelectedTextPane().getSelectionStart(), GetSelectedTextPane().getSelectionEnd() - GetSelectedTextPane().getSelectionStart(), atts, false );
 GetSelectedTextPane().requestFocusInWindow();
-    }//GEN-LAST:event_jButton2ActionPerformed
+    }//GEN-LAST:event_colorActionPerformed
 
     private TextEditorArea GetSelectedTextPane() {
 
@@ -1222,7 +1303,7 @@ GetSelectedTextPane().requestFocusInWindow();
 
     }
 
-    private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
+    private void imageActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_imageActionPerformed
 
         try{
             File pictureFile = choosePictureFile();
@@ -1232,7 +1313,8 @@ GetSelectedTextPane().requestFocusInWindow();
 				GetSelectedTextPane().requestFocusInWindow();
 				return;
 			}
-                       
+     
+                   
     //StyledDocument doc = (StyledDocument)GetSelectedTextPane().getDocument();
  HTMLEditorKit hek = new HTMLEditorKit();
 
@@ -1260,12 +1342,13 @@ GetSelectedTextPane().requestFocusInWindow();
    
     GetSelectedTextPane().setText("<img src=\"C:\\Users\\abdeljabbar\\Documents\\eat.jpg\"/>");  
     //GetSelectedTextPane().requestFocusInWindow();***************/
+
         }
         catch(Exception e)
         {
             
         }
-    }//GEN-LAST:event_jButton4ActionPerformed
+    }//GEN-LAST:event_imageActionPerformed
 
     private void textAlignComboBoxItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_textAlignComboBoxItemStateChanged
        
@@ -1292,9 +1375,9 @@ private StyledDocument getEditorDocument() {
 		StyledDocument doc = (DefaultStyledDocument) GetSelectedTextPane().getDocument();
 		return doc;
 	}
-    private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
+    private void BulletActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BulletActionPerformed
      
-    }//GEN-LAST:event_jButton5ActionPerformed
+    }//GEN-LAST:event_BulletActionPerformed
 
     private void FormatMenuSelected(javax.swing.event.MenuEvent evt) {//GEN-FIRST:event_FormatMenuSelected
         
@@ -1315,7 +1398,6 @@ private StyledDocument getEditorDocument() {
             resetInt = prestInt.executeQuery();
             if(resetInt.next()){Tete = resetInt.getString("TextTete");}*/
             String qeury = "select * from [DB_MEMIOR].[dbo].[Exam] where IDEXM= ? AND NameEXM = ? and IdUser = ? ";
-           
             presta = con.prepareStatement(qeury);
             presta.setInt(1,Exam.IDEAXM);
             presta.setString(2,Exam.NAMEEXAM);
@@ -1395,11 +1477,11 @@ private StyledDocument getEditorDocument() {
                        }
                        
                    }
-                  //}
-                  //else
-                  //{
-                      JOptionPane.showMessageDialog(null, "You must enter Intet for The Exam");
-                 // }
+                 
+                 
+                  
+                      JOptionPane.showMessageDialog(null, "The UpDate process Was SuccessFul");
+                 
                 }
             
        
@@ -1422,7 +1504,7 @@ private StyledDocument getEditorDocument() {
 
     private void listDegActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_listDegActionPerformed
         // TODO add your handling code here:
-         if(listDeg.getItemCount()>1)
+        /* if(listDeg.getItemCount()>1)
         {
             listDeg.removeItemAt(listDeg.getSelectedIndex());
             item++;
@@ -1439,8 +1521,8 @@ private StyledDocument getEditorDocument() {
             listDeg.addItem("Easy");
             listDeg.addItem("very easy");
             listDeg.addItem("Average");
-            listDeg.addItem("Difficult");
-        }
+            listDeg.addItem("Difficult");*/
+        //}
         
          /*  Object tempItem = listDeg.getSelectedItem();
            if (!((CanEnable) tempItem).isEnabled()) {
@@ -1532,26 +1614,26 @@ private StyledDocument getEditorDocument() {
         // TODO add your handling code here:
     }//GEN-LAST:event_jButton7ActionPerformed
 
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+    private void undrlineActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_undrlineActionPerformed
         StyledDocument doc = (StyledDocument)GetSelectedTextPane().getDocument();
 SimpleAttributeSet atts = new SimpleAttributeSet();
 StyleConstants.setUnderline(atts, true);
 
 doc.setCharacterAttributes( GetSelectedTextPane().getSelectionStart(), GetSelectedTextPane().getSelectionEnd() - GetSelectedTextPane().getSelectionStart(), atts, false );
 GetSelectedTextPane().requestFocusInWindow();
-    }//GEN-LAST:event_jButton1ActionPerformed
+    }//GEN-LAST:event_undrlineActionPerformed
 
     private void UpDateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_UpDateActionPerformed
        try
         {
            if(EditExo.isSelected())
            {  
-               if(NumPar.getText().isEmpty())
-                    {
-                        JOptionPane.showMessageDialog(null, "The Parts Field is Empty");
-                        return;
-                    }
-            int part = Integer.valueOf(NumPar.getText());
+              // if(NumPar.getText().isEmpty())
+                   //{
+                      //  JOptionPane.showMessageDialog(null, "The Parts Field is Empty");
+                       // return;
+                   // }
+            int part =  NumPar.getSelectedIndex()+1;
             String qeury = "select Count(*) from [DB_MEMIOR].[dbo].[Exercise] where  DegEXO= ? and  PartEXO = ? and   IDEXM = ?  ";
             prestInt = conInt.prepareStatement(qeury);
             prestInt.setString(1, listDeg.getSelectedItem().toString());
@@ -1615,12 +1697,12 @@ GetSelectedTextPane().requestFocusInWindow();
                 }
                 if(EditExo.isSelected())
                 {
-                    if(NumPar.getText().isEmpty())
-                    {
-                        JOptionPane.showMessageDialog(null, "The Parts Field is Empty");
-                        return;
-                    }
-                   int part = Integer.valueOf(NumPar.getText());
+                   // if(NumPar.getText().isEmpty())
+                    //{
+                       // JOptionPane.showMessageDialog(null, "The Parts Field is Empty");
+                       // return;
+                   // }
+                  int part =  NumPar.getSelectedIndex()+1;
                     //String name =nameM.getText();
                     String qeurydel = "select Count(*) from [DB_MEMIOR].[dbo].[Exercise] where DegEXO= ? and  PartEXO = ? and   IDEXM = ?  ";
                     prestInt= conInt.prepareStatement(qeurydel);
@@ -1660,29 +1742,29 @@ GetSelectedTextPane().requestFocusInWindow();
         }
     }//GEN-LAST:event_DeleteActionPerformed
 
-    private void AddModActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_AddModActionPerformed
+    private void UsersActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_UsersActionPerformed
         User user =new User();
-        
         user.setVisible(true);
-    }//GEN-LAST:event_AddModActionPerformed
+    }//GEN-LAST:event_UsersActionPerformed
 
-    private void jButton12ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton12ActionPerformed
+    private void ExamButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ExamButtonActionPerformed
         Exam module = new Exam();
         module.setVisible(true);
-        module.getgoedit().setEnabled(false);
+        this.setVisible(false);
+        //module.getgoedit().setEnabled(false);
         
-    }//GEN-LAST:event_jButton12ActionPerformed
+    }//GEN-LAST:event_ExamButtonActionPerformed
 
-    private void jButton13ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton13ActionPerformed
+    private void searchActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_searchActionPerformed
         try
         {   if(EditExo.isSelected())
                 {
-                    if(NumPar.getText().isEmpty())
-                    {
-                        JOptionPane.showMessageDialog(null,"TextField Part is Empty");
-                        return;
-                    }
-                    int part = Integer.valueOf(NumPar.getText());
+                   // if(NumPar.getText().isEmpty())
+                   // {
+                       // JOptionPane.showMessageDialog(null,"TextField Part is Empty");
+                       // return;
+                   // }
+                    int part = NumPar.getSelectedIndex()+1;
                     String qeury = "select * from [DB_MEMIOR].[dbo].[Exercise] where  DegEXO = ? and PartEXO = ? and IDEXM = ? ";
                     prestInt = conInt.prepareStatement(qeury);
                     prestInt .setString(1, listDeg.getSelectedItem().toString());
@@ -1720,38 +1802,61 @@ GetSelectedTextPane().requestFocusInWindow();
                     
                     
                 }
+                else
+                     {
+                         JOptionPane.showMessageDialog(null, "Please Specify What Exercise You Will Write or Head");
+                     }
         }
         catch(Exception e)
         {
         }
-    }//GEN-LAST:event_jButton13ActionPerformed
+    }//GEN-LAST:event_searchActionPerformed
 
-    private void jButton6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton6ActionPerformed
-      // GetSelectedTextPane().undoAction.actionPerformed(evt);
-    }//GEN-LAST:event_jButton6ActionPerformed
+    private void undoBActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_undoBActionPerformed
+     //GetSelectedTextPane().Undo();
+        undoAction = new UndoAction(undoManager,redoAction);
+       GetSelectedTextPane().getInputMap().put(undoKeystroke, "undoKeystroke");
+GetSelectedTextPane().getActionMap().put("undoKeystroke", undoAction);
 
-    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
-       //GetSelectedTextPane().redoAction.actionPerformed(evt);
-    }//GEN-LAST:event_jButton3ActionPerformed
+    }//GEN-LAST:event_undoBActionPerformed
+
+    private void redoBActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_redoBActionPerformed
+        //GetSelectedTextPane().Redo();
+        GetSelectedTextPane().getInputMap().put(redoKeystroke, "redoKeystroke");
+        GetSelectedTextPane().getActionMap().put("redoKeystroke", redoAction);
+    }//GEN-LAST:event_redoBActionPerformed
 
     private void NameEXMActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_NameEXMActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_NameEXMActionPerformed
+
+    private void listDegMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_listDegMouseClicked
+        // TODO add your handling code here:
+        
+    }//GEN-LAST:event_listDegMouseClicked
+
+    private void exitActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exitActionPerformed
+       setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+    }//GEN-LAST:event_exitActionPerformed
+
+    private void exitMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_exitMouseClicked
+        // TODO add your handling code here:
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+    }//GEN-LAST:event_exitMouseClicked
    
-    /**
-     * @param args the command line arguments
-     */
+   
   
 
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton AddMod;
+    private javax.swing.JButton Bullet;
     private javax.swing.JButton CopyButton;
     private javax.swing.JButton CutButton;
     private javax.swing.JButton Delete;
     private javax.swing.JRadioButton EditExo;
     private javax.swing.JRadioButton EditInt;
+    private javax.swing.JButton ExamButton;
     private javax.swing.JMenu File;
     private javax.swing.JMenuItem Font;
     private javax.swing.JMenu Format;
@@ -1759,27 +1864,21 @@ GetSelectedTextPane().requestFocusInWindow();
     private javax.swing.JTextField NameEXM;
     private javax.swing.JMenuItem New;
     private javax.swing.JButton NewButton;
-    private javax.swing.JTextField NumPar;
+    private javax.swing.JComboBox<String> NumPar;
     private javax.swing.JButton OpenButton;
     private javax.swing.JButton Pdf;
     private javax.swing.JButton SaveButton;
     private javax.swing.JButton UpDate;
+    private javax.swing.JButton Users;
     private javax.swing.JMenuItem close;
+    private javax.swing.JButton color;
     private javax.swing.JMenuItem copy;
     private javax.swing.JMenuItem cut;
     private javax.swing.JMenu edit;
     private javax.swing.JMenuItem exit;
-    private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton12;
-    private javax.swing.JButton jButton13;
-    private javax.swing.JButton jButton2;
-    private javax.swing.JButton jButton3;
-    private javax.swing.JButton jButton4;
-    private javax.swing.JButton jButton5;
-    private javax.swing.JButton jButton6;
+    private javax.swing.JButton image;
     private javax.swing.JButton jButton7;
     private javax.swing.JButton jButton8;
-    private javax.swing.JButton jButton9;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
@@ -1799,12 +1898,15 @@ GetSelectedTextPane().requestFocusInWindow();
     private javax.swing.JMenuItem open;
     private javax.swing.JMenuItem paste;
     private javax.swing.JMenuItem redo;
+    private javax.swing.JButton redoB;
     private javax.swing.JMenuItem save;
-    private javax.swing.JMenuItem saveas;
+    private javax.swing.JButton search;
+    private javax.swing.JButton selecteAll;
     private javax.swing.JMenuItem sellect;
     private javax.swing.JComboBox<String> textAlignComboBox;
     private javax.swing.JMenuItem undo;
-    private javax.swing.JCheckBoxMenuItem wtext;
+    private javax.swing.JButton undoB;
+    private javax.swing.JButton undrline;
     // End of variables declaration//GEN-END:variables
 private File choosePictureFile() {
 		
@@ -2212,7 +2314,7 @@ catch(Exception e)
     public void createPdf(ArrayList<String> list, String nameFile) {
         try{
         Document document = new Document();
-    PdfWriter.getInstance(document,new FileOutputStream("Examenhenka"+nameFile+".pdf"));
+    PdfWriter.getInstance(document,new FileOutputStream(Exam.NAMEEXAM+"_"+Exam.NAMEMODULE+nameFile+".pdf"));
     document.open();
     //String css = readCSS();
     document.newPage();
@@ -2238,14 +2340,39 @@ catch(Exception e)
         }
 }
 
-
+public void DisableEnable(boolean cas)
+   {
+     OpenButton.setEnabled(cas);
+     CutButton.setEnabled(cas);
+     CopyButton.setEnabled(cas);
+    jButton8.setEnabled(cas);
+    selecteAll.setEnabled(cas);
+     color.setEnabled(cas);
+     undrline.setEnabled(cas);
+     Bullet.setEnabled(cas);
+     jButton7.setEnabled(cas);
+     Pdf.setEnabled(cas);
+     image.setEnabled(cas);
+     SaveButton.setEnabled(cas);
+     UpDate.setEnabled(cas);
+     Delete.setEnabled(cas);
+     search.setEnabled(cas);
+     ExamButton.setEnabled(cas);
+     textAlignComboBox.setEnabled(cas);
+     EditInt.setEnabled(cas);
+     EditExo.setEnabled(cas);
+     listDeg.setEnabled(cas);
+     NumPar.setEnabled(cas);
+     Users.setEnabled(cas);
+    
+   }
 
     private void updateButtons() 
     {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
     
-     public static void main(String[] args) throws FileNotFoundException {
+    /* public static void main(String[] args) throws FileNotFoundException {
         // TODO code application logic here
       
         ConnectionDB.OpenConnection();
@@ -2254,5 +2381,5 @@ catch(Exception e)
         e.setVisible(true);
         //e.CreatePdf(h,"b11");
         
-     }
+     }*/
 }

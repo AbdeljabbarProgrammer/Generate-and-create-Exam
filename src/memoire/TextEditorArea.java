@@ -11,8 +11,10 @@ import java.awt.Event;
 import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.io.IOException;
+import java.util.ArrayList;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
+import javax.swing.JButton;
 import javax.swing.JEditorPane;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
@@ -21,145 +23,45 @@ import javax.swing.KeyStroke;
 import javax.swing.SizeRequirements;
 import javax.swing.event.UndoableEditEvent;
 import javax.swing.event.UndoableEditListener;
+import javax.swing.text.AbstractDocument;
+import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
 import javax.swing.text.Element;
 import javax.swing.text.ParagraphView;
+import javax.swing.text.StyledEditorKit;
 import javax.swing.text.View;
 import javax.swing.text.ViewFactory;
 import javax.swing.text.html.HTMLEditorKit;
 import javax.swing.text.html.InlineView;
+import javax.swing.undo.AbstractUndoableEdit;
 import javax.swing.undo.CannotRedoException;
 import javax.swing.undo.CannotUndoException;
+import javax.swing.undo.CompoundEdit;
 import javax.swing.undo.UndoManager;
-import memoire.UndoRedo.RedoAction;
-import memoire.UndoRedo.UndoAction;
-import memoire.UndoRedo.UndoHandler;
+import javax.swing.undo.UndoableEdit;
+
+
+
 
 /**
  *
  * @author abdeljabbar
  */
-public final class TextEditorArea extends javax.swing.JEditorPane{
-    UndoManager UndoManager ;
-Document editorPaneDocument;
-protected UndoHandler undoHandler = new UndoHandler();
-protected UndoManager undoManager = new UndoManager();
- UndoAction undoAction = new UndoAction();
- RedoAction redoAction = new RedoAction();
-KeyStroke undoKeystroke = KeyStroke.getKeyStroke(KeyEvent.VK_Z, Event.META_MASK);
-KeyStroke redoKeystroke = KeyStroke.getKeyStroke(KeyEvent.VK_Y, Event.META_MASK);
-class UndoHandler implements UndoableEditListener
-{
+public final class TextEditorArea extends javax.swing.JEditorPane {
+private Document editorPaneDocument;
+protected UndoHandler undoHandler; 
+protected UndoManager undoManager ;
+private UndoAction undoAction = null;
+private RedoAction redoAction = null;
 
-  /**
-   * Messaged when the Document has created an edit, the edit is added to
-   * <code>undoManager</code>, an instance of UndoManager.
-   */
-  public void undoableEditHappened(UndoableEditEvent e)
-  {
-    undoManager.addEdit(e.getEdit());
-    undoAction.update();
-    redoAction.update();
-  }
-}
-
-class UndoAction extends AbstractAction
-{
-  public UndoAction()
-  {
-    super("Undo");
-    setEnabled(false);
-  }
-
-  public void actionPerformed(ActionEvent e)
-  {
-    try
-    {
-      undoManager.undo();
-    }
-    catch (CannotUndoException ex)
-    {
-      // TODO deal with this
-      //ex.printStackTrace();
-    }
-    update();
-    redoAction.update();
-  }
-
-  protected void update()
-  {
-    if (undoManager.canUndo())
-    {
-      setEnabled(true);
-      putValue(Action.NAME, undoManager.getUndoPresentationName());
-    }
-    else
-    {
-      setEnabled(false);
-      putValue(Action.NAME, "Undo");
-    }
-  }
-
-       // @Override
-        /*public void actionPerformed(ActionEvent ae) {
-            throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-        }*/
-    }
-
-class RedoAction extends AbstractAction
-{
-  public RedoAction()
-  {
-    super("Redo");
-    setEnabled(false);
-  }
-
-  public void actionPerformed(ActionEvent e)
-  {
-    try
-    {
-      undoManager.redo();
-    }
-    catch (CannotRedoException ex)
-    {
-      // TODO deal with this
-      ex.printStackTrace();
-    }
-    update();
-    undoAction.update();
-  }
-
-  protected void update()
-  {
-    if (undoManager.canRedo())
-    {
-      setEnabled(true);
-      putValue(Action.NAME, undoManager.getRedoPresentationName());
-    }
-    else
-    {
-      setEnabled(false);
-      putValue(Action.NAME, "Redo");
-    }
-  }
-}
      public TextEditorArea()
     {
        super(); 
-        //JTextPane textPane = new JTextPane();
-        
-        //this.setAutoscrolls(true);
-       // InitializeUndoRedo();
-        //new JScrollPane(this);
-        this.getInputMap().put(undoKeystroke, "undoKeystroke");
-        this.getActionMap().put("undoKeystroke", undoAction);
-
-//redoAction = new RedoAction();
-        this.getInputMap().put(redoKeystroke, "redoKeystroke");
-        this.getActionMap().put("redoKeystroke", redoAction);
-        setContentType("text/HTML");
-        setMinimumSize(new Dimension(0, 0)); 
-        setEditorKit(new HTMLEditorKit(){ 
+       InitializeUndoRedo();
+      
+       setContentType("text/HTML");
+       setMinimumSize(new Dimension(0, 0)); 
+       setEditorKit(new HTMLEditorKit(){ 
            @Override 
            public ViewFactory getViewFactory(){ 
  
@@ -221,31 +123,152 @@ class RedoAction extends AbstractAction
      super();
     InitializeUndoRedo();
     }*/
-     public void InitializeUndoRedo1(){
-       editorPaneDocument= this.getDocument();
-        editorPaneDocument.addUndoableEditListener(undoHandler);
-     }
-    
-   /*public void InitializeUndoRedo(){
-     UndoManager = new UndoManager();
-        getDocument().addUndoableEditListener((UndoableEditEvent e) -> {
-            //UndoManager.addEdit(e.getEdit());
-     });
+    /* public void InitializeUndoRedo1(){
+       
+        getDocument().addUndoableEditListener(undoHandler);
+     }*/
+     
+   
+   public void InitializeUndoRedo(){
+       editorPaneDocument = getDocument();
+editorPaneDocument.addUndoableEditListener(undoHandler);
+
+        KeyStroke undoKeystroke = KeyStroke.getKeyStroke(KeyEvent.VK_Z, Event.META_MASK);
+KeyStroke redoKeystroke = KeyStroke.getKeyStroke(KeyEvent.VK_Y, Event.META_MASK);
+undoManager = new UndoManager();
+/*undoAction = new UndoAction(undoManager,redoAction);
+getInputMap().put(undoKeystroke, "undoKeystroke");
+getActionMap().put("undoKeystroke", undoAction);*/
+
+/*redoAction = new RedoAction(undoManager,undoAction);
+getInputMap().put(redoKeystroke, "redoKeystroke");
+getActionMap().put("redoKeystroke", redoAction);*/
+
+         setEditorKit(new StyledEditorKit());
+        
+        //undoManager.refreshControls();
     }
 
-    void Undo() {
-        UndoManager.undo();
+  public void Undo() {
+        undoManager.undo();
     }    
-    void Redo() {
-        UndoManager.redo();
+    public void Redo() {
+        undoManager.redo();
     }
-    public void underline()
-    {
-        this.requestDefaultFocus();
-    }*/
-  
-  
+  /* class MyCompoundEdit extends CompoundEdit {
+        boolean isUnDone=false;
+        public int getLength() {
+            return edits.size();
+        }
+ 
+        public void undo() throws CannotUndoException {
+            super.undo();
+            isUnDone=true;
+        }
+        public void redo() throws CannotUndoException {
+            super.redo();
+            isUnDone=false;
+        }
+        public boolean canUndo() {
+            return edits.size()>0 && !isUnDone;
+        }
 
-//undoAction = new UndoAction();
+        public boolean canRedo() {
+            return edits.size()>0 && isUnDone;
+        }
+ 
+    }
+    class UndoManager extends AbstractUndoableEdit implements UndoableEditListener {
+        String lastEditName=null;
+        ArrayList<MyCompoundEdit> edits=new ArrayList<MyCompoundEdit>();
+        MyCompoundEdit current;
+        int pointer=-1;
+ 
+        public void undoableEditHappened(UndoableEditEvent e) {
+            UndoableEdit edit=e.getEdit();
+            if (edit instanceof AbstractDocument.DefaultDocumentEvent) {
+                try {
+                    AbstractDocument.DefaultDocumentEvent event=(AbstractDocument.DefaultDocumentEvent)edit;
+                    int start=event.getOffset();
+                    int len=event.getLength();
+                    String text=event.getDocument().getText(start, len);
+                    boolean isNeedStart=false;
+                    if (current==null) {
+                        isNeedStart=true;
+                    }
+                    else if (text.contains("\n")) {
+                        isNeedStart=true;
+                    }
+                    else if (lastEditName==null || !lastEditName.equals(edit.getPresentationName())) {
+                        isNeedStart=true;
+                    }
+ 
+                    while (pointer<edits.size()-1) {
+                        edits.remove(edits.size()-1);
+                        isNeedStart=true;
+                    }
+                    if (isNeedStart) {
+                        createCompoundEdit();
+                    }
+ 
+                    current.addEdit(edit);
+                    lastEditName=edit.getPresentationName();
+ 
+                    refreshControls();
+                } catch (BadLocationException e1) {
+                    e1.printStackTrace();
+                }
+            }
+        }
+ 
+        public void createCompoundEdit() {
+            if (current==null) {
+                current= new MyCompoundEdit();
+            }
+            else if (current.getLength()>0) {
+                current= new MyCompoundEdit();
+            }
+ 
+            edits.add(current);
+            pointer++;
+        }
+ 
+        public void undo() throws CannotUndoException {
+            if (!canUndo()) {
+                throw new CannotUndoException();
+            }
+ 
+            MyCompoundEdit u=edits.get(pointer);
+            u.undo();
+            pointer--;
+ 
+            refreshControls();
+        }
+ 
+        public void redo() throws CannotUndoException {
+            if (!canRedo()) {
+                throw new CannotUndoException();
+            }
+ 
+            pointer++;
+            MyCompoundEdit u=edits.get(pointer);
+            u.redo();
+ 
+            refreshControls();
+        }
+ 
+        public boolean canUndo() {
+            return pointer>=0;
+        }
 
+        public boolean canRedo() {
+            return edits.size()>0 && pointer<edits.size()-1;
+        }
+ 
+        public void refreshControls() {
+            btnUndo.setEnabled(canUndo());
+            btnRedo.setEnabled(canRedo());
+        }
+    }
+  */
 }

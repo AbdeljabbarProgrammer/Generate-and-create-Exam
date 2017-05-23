@@ -29,6 +29,7 @@ public class Login extends javax.swing.JFrame {
         con= ConnectionDB.OpenConnection();
         setLocationRelativeTo(this);
         setResizable(false);
+        setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
     }
 
     /**
