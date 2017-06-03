@@ -56,8 +56,6 @@ public class Login extends javax.swing.JFrame {
         jPanel1.setBackground(new java.awt.Color(129, 143, 191));
         jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createTitledBorder(null, "Login", javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.TOP, new java.awt.Font("Times New Roman", 1, 18)), "Login", javax.swing.border.TitledBorder.LEFT, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Urdu Typesetting", 0, 36), new java.awt.Color(113, 188, 231))); // NOI18N
 
-        username.setText("Admin");
-
         jLabel1.setFont(new java.awt.Font("Yu Gothic UI Semibold", 1, 14)); // NOI18N
         jLabel1.setText("User Name :");
 
@@ -88,7 +86,6 @@ public class Login extends javax.swing.JFrame {
 
         jLabel3.setIcon(new javax.swing.ImageIcon(getClass().getResource("/memoire/User_Manager1.png"))); // NOI18N
 
-        password.setText("2017");
         password.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 passwordActionPerformed(evt);
@@ -178,12 +175,13 @@ public class Login extends javax.swing.JFrame {
                 id_user =reselt.getInt("IDUser");
                 Exam module = new Exam();
                 module.setVisible(true);
+                this.hide();
             }
             else
             {
                 JOptionPane.showMessageDialog(this,"The password or username is wrong");
             }
-            this.hide();
+            
         }
         catch(Exception e)
         {

@@ -37,15 +37,7 @@ public class Edit {
     }
 }
 
-public static void main(String[] args){
-    String[] database = {"a","b","c"};
-    for(int i=1; i<=database.length; i++){
-        String[] result = getAllLists(database, i);
-        for(int j=0; j<result.length; j++){
-            System.out.println(result[j]);
-        }
-    }
-}
+
 
     
 }

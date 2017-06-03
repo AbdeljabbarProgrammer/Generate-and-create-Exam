@@ -1,7 +1,7 @@
-
 package memoire;
 
 import java.awt.HeadlessException;
+import java.beans.PropertyVetoException;
 import java.sql.Connection;
 import java.sql.Date;
 import java.sql.PreparedStatement;
@@ -12,10 +12,14 @@ import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Vector;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.ButtonGroup;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import net.proteanit.sql.DbUtils;
 import org.apache.poi.hslf.record.Record;
 
@@ -24,30 +28,44 @@ public class Exam extends javax.swing.JFrame {
     Connection con;
     ResultSet Result;
     PreparedStatement pred;
-     PreparedStatement predu;
+    PreparedStatement predu;
+    private ExamModel exam;
     ButtonGroup GroupB = new ButtonGroup();
-    public static String NAMEEXAM ;
-    public static int NBRPART;
-    public static int  IDEAXM;
-    public static String NAMEMODULE;
-    
-    
-    public Exam() 
-    {
+
+    public Exam() {
         initComponents();
-        con =ConnectionDB.OpenConnection();
+        con = ConnectionDB.OpenConnection();
         setLocationRelativeTo(this);
         setResizable(false);
         setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
         chargeExamList();
-        
+
         GroupB = new ButtonGroup();
         GroupB.add(AddEXM);
         GroupB.add(EditEXM);
         GroupB.add(ArchiveEXM);
+
+        TableEXM.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+
+            @Override
+            public void valueChanged(ListSelectionEvent lse) {
+                if (!lse.getValueIsAdjusting() && TableEXM.getSelectedRow() >= 0) {
+                    exam = new ExamModel(TableEXM.getSelectedRow(), TableEXM.getModel());
+                    if (EditEXM.isSelected()) {
+                        try {
+                            DateEXM.setDate(exam.Date);
+                        } catch (PropertyVetoException ex) {
+                            Logger.getLogger(Exam.class.getName()).log(Level.SEVERE, null, ex);
+                        }
+                        NameMod.setText(exam.Name);
+                        nbrPar.setSelectedIndex(exam.PartsCount - 2);
+                       // nbrPar.setSelectedIndex(exam.PartsCount - 1);
+                    }
+                }
+            }
+        });
     }
 
-    
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
@@ -162,11 +180,6 @@ public class Exam extends javax.swing.JFrame {
             }
         ));
         TableEXM.setRowHeight(20);
-        TableEXM.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                TableEXMMouseClicked(evt);
-            }
-        });
         jScrollPane2.setViewportView(TableEXM);
 
         Update.setBackground(new java.awt.Color(213, 199, 220));
@@ -340,110 +353,89 @@ public class Exam extends javax.swing.JFrame {
 
     private void AddActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_AddActionPerformed
         // TODO add your handling code here:
-        try
-        {           
-                    DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd");
-                    java.sql.Date examSqlDate = new java.sql.Date(DateEXM.getDate().getTime());
-                    java.sql.Date nowSqlDate = java.sql.Date.valueOf(LocalDate.now());
-                   
-                    String ModuleName=NameMod.getText();
-                    if(ModuleName.length()==0)
-                    {
-                        JOptionPane.showMessageDialog(this,"Module Name is Empty");
-                        return;
-                    }
-                    if(examSqlDate.before(nowSqlDate))
-                    {
-                        JOptionPane.showMessageDialog(this,"Invalid Date OR Field Empty");
-                        return;
-                    }
-                    if(NameExam.getText().length()==0)
-                    {
-                        JOptionPane.showMessageDialog(this,"Exam Name is Empty");
-                        return;
-                    }
-                    if(AddEXM.isSelected()==false)
-                    {
-                        JOptionPane.showMessageDialog(this,"Must be selected Radio Add Exam");
-                        return;
-                    }
-                    
-                       
-                        String qeury = "select Count(*) from [DB_MEMIOR].[dbo].[Exam] where   NameEXM = ? AND IDUser = ?  ";
-                        pred  = con.prepareStatement(qeury);
-                        pred.setString(1,NameExam.getText());
-                        pred.setInt(2,Login.id_user);
-                        Result = pred.executeQuery();
-                        if(Result.next())
-                        {
-                            if( Result.getInt(1)==0)
-                            {
-                                String query = "INSERT INTO [DB_MEMIOR].[dbo].[Exam] (NameEXM,NbrPart,NbrDeg,DatePro,NameModule,IDUser)values (?,?,?,?,?,?)";
-                                pred = con.prepareStatement(query);
-                                pred.setString(1,NameExam.getText());
-                                pred.setInt(2,nbrPar.getSelectedIndex()+2);
-                                pred.setInt(3,NbrDeg.getSelectedIndex()+2);
-                                pred.setDate(4, new java.sql.Date(DateEXM.getDate().getTime()));
-                                pred.setString(5,NameMod.getText());
-                                pred.setInt(6,Login.id_user);
-                                pred.execute();
-                                chargeExamList();
-                                JOptionPane.showMessageDialog(null,"The INSERT process Was SuccessFul");
-                            
-                       
-                                }
-                                else
-                                {
-                                  JOptionPane.showMessageDialog(null,"This Exam Already Exists"); 
-                                }
-           /* Exercises exo = new Exercises();
+        try {
+            DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd");
+            java.sql.Date examSqlDate = new java.sql.Date(DateEXM.getDate().getTime());
+            java.sql.Date nowSqlDate = java.sql.Date.valueOf(LocalDate.now());
+
+            String ModuleName = NameMod.getText();
+            if (ModuleName.length() == 0) {
+                JOptionPane.showMessageDialog(this, "Module Name is Empty");
+                return;
+            }
+            if (examSqlDate.before(nowSqlDate)) {
+                JOptionPane.showMessageDialog(this, "Invalid Date OR Field Empty");
+                return;
+            }
+            if (NameExam.getText().length() == 0) {
+                JOptionPane.showMessageDialog(this, "Exam Name is Empty");
+                return;
+            }
+            if (AddEXM.isSelected() == false) {
+                JOptionPane.showMessageDialog(this, "Must be selected Radio Add Exam");
+                return;
+            }
+
+            String qeury = "select Count(*) from [DB_MEMIOR].[dbo].[Exam] where   NameEXM = ? AND IDUser = ?  ";
+            pred = con.prepareStatement(qeury);
+            pred.setString(1, NameExam.getText());
+            pred.setInt(2, Login.id_user);
+            Result = pred.executeQuery();
+            if (Result.next()) {
+                if (Result.getInt(1) == 0) {
+                    String query = "INSERT INTO [DB_MEMIOR].[dbo].[Exam] (NameEXM,NbrPart,NbrDeg,DatePro,NameModule,IDUser)values (?,?,?,?,?,?)";
+                    pred = con.prepareStatement(query);
+                    pred.setString(1, NameExam.getText());
+                    pred.setInt(2, nbrPar.getSelectedIndex() + 2);
+                    pred.setInt(3, NbrDeg.getSelectedIndex() + 2);
+                    pred.setDate(4, new java.sql.Date(DateEXM.getDate().getTime()));
+                    pred.setString(5, NameMod.getText());
+                    pred.setInt(6, Login.id_user);
+                    pred.execute();
+                    chargeExamList();
+                    JOptionPane.showMessageDialog(null, "The INSERT process Was SuccessFul");
+
+                } else {
+                    JOptionPane.showMessageDialog(null, "This Exam Already Exists");
+                }
+                /* Exercises exo = new Exercises();
             exo.setVisible(true);
             this.hide();*/
-                    }
-                    else
-                    {
-                        JOptionPane.showMessageDialog(null,"This date is not valid");
-                    }
-        }
-        catch(Exception e)
-        {
+            } else {
+                JOptionPane.showMessageDialog(null, "This date is not valid");
+            }
+        } catch (Exception e) {
             JOptionPane.showMessageDialog(null, e.toString());
         }
     }//GEN-LAST:event_AddActionPerformed
 
     private void goeditActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_goeditActionPerformed
-        // TODO add your handling code here:
-        if(  TableEXM.getSelectionModel().isSelectionEmpty()==false)
-        {
-           System.out.println(NBRPART);
-            Exercises exo = new Exercises();
-            
-          exo.DisableEnable(false);
-             //ConnectDialog d = new ConnectDialog(this,Dialog.ModalityType.DOCUMENT_MODAL);
+
+        if (TableEXM.getSelectionModel().isSelectionEmpty() == false) {
+            ExamModel exam = new ExamModel(TableEXM.getSelectedRow(), TableEXM.getModel());
+            //  System.out.println(NBRPART);
+            Exercises exo = new Exercises(exam);
+
+            exo.DisableEnable(false);
+            //ConnectDialog d = new ConnectDialog(this,Dialog.ModalityType.DOCUMENT_MODAL);
             exo.setVisible(true);
             this.setVisible(false);
-            
-       
-         
-           
-            
-        }
-        else
-        {
-           JOptionPane.showMessageDialog(null, "Please Select Exam"); 
+
+        } else {
+            JOptionPane.showMessageDialog(null, "Please Select Exam");
         }
     }//GEN-LAST:event_goeditActionPerformed
 
     private void NbrDegItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_NbrDegItemStateChanged
-       //  nbrPar.setSelectedIndex(NbrDeg.getSelectedIndex());
+        //  nbrPar.setSelectedIndex(NbrDeg.getSelectedIndex());
     }//GEN-LAST:event_NbrDegItemStateChanged
 
     private void nbrParItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_nbrParItemStateChanged
-       // NbrDeg.setSelectedIndex(nbrPar.getSelectedIndex());
+        // NbrDeg.setSelectedIndex(nbrPar.getSelectedIndex());
     }//GEN-LAST:event_nbrParItemStateChanged
 
     private void nbrParActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_nbrParActionPerformed
-         NbrDeg.setSelectedIndex(nbrPar.getSelectedIndex());
+        NbrDeg.setSelectedIndex(nbrPar.getSelectedIndex());
     }//GEN-LAST:event_nbrParActionPerformed
 
     private void NbrDegActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_NbrDegActionPerformed
@@ -451,7 +443,7 @@ public class Exam extends javax.swing.JFrame {
     }//GEN-LAST:event_NbrDegActionPerformed
 
     private void EditEXMActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_EditEXMActionPerformed
-       DateEXM.setEnabled(true);
+        DateEXM.setEnabled(true);
         NameMod.setEnabled(true);
         nbrPar.setEnabled(true);
         NbrDeg.setEnabled(true);
@@ -470,7 +462,7 @@ public class Exam extends javax.swing.JFrame {
         NameExam.setEnabled(false);
         Update.setEnabled(false);
         chargeExamList();
-        
+
     }//GEN-LAST:event_ArchiveEXMActionPerformed
 
     private void AddEXMActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_AddEXMActionPerformed
@@ -481,119 +473,83 @@ public class Exam extends javax.swing.JFrame {
         Add.setEnabled(true);
         NameExam.setEnabled(true);
         Update.setEnabled(false);
+
         chargeExamList();
     }//GEN-LAST:event_AddEXMActionPerformed
 
-    private void TableEXMMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_TableEXMMouseClicked
-       try
-       {
-        int row =TableEXM.getSelectedRow();
-        IDEAXM = Integer.valueOf(TableEXM .getModel().getValueAt(row, 0).toString());
-        NAMEEXAM = TableEXM .getModel().getValueAt(row, 1).toString();
-        NBRPART = Integer.valueOf(TableEXM .getModel().getValueAt(row,5).toString());
-        NAMEMODULE = TableEXM .getModel().getValueAt(row,3).toString();
-            if(EditEXM.isSelected())
-            {
-                DateEXM.setDate(Date.valueOf(TableEXM .getModel().getValueAt(row, 2).toString()));
-                NameMod.setText(NAMEMODULE);
-                nbrPar.setSelectedIndex(Integer.valueOf(TableEXM .getModel().getValueAt(row,4).toString())-1);
-            }
-       }
-       catch(Exception e)
-       {
-       }
-    }//GEN-LAST:event_TableEXMMouseClicked
-
     private void UpdateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_UpdateActionPerformed
-        try
-        {           
-                    DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd");
-                    java.sql.Date examSqlDate = new java.sql.Date(DateEXM.getDate().getTime());
-                    java.sql.Date nowSqlDate = java.sql.Date.valueOf(LocalDate.now());
-                   
-                    String ModuleName=NameMod.getText();
-                    if(TableEXM.getSelectionModel().isSelectionEmpty())
-                    {
-                        JOptionPane.showMessageDialog(this,"Select Row the Exam in Table ");
-                        return;
-                    }
-                     
-                    if(ModuleName.length()==0)
-                    {
-                        JOptionPane.showMessageDialog(this,"Module Name is Empty");
-                        return;
-                    }
-                    if(EditEXM.isSelected()==false)
-                    {
-                        JOptionPane.showMessageDialog(this,"Must be selected  Radio Edit Exam");
-                        return;
-                    }
-                    if(examSqlDate.before(nowSqlDate))
-                    {
-                        JOptionPane.showMessageDialog(this,"Invalid Date OR Field Empty");
-                        return;
-                    }
-                    
-                                String query = "UPDATE [DB_MEMIOR].[dbo].[Exam]  SET  NbrPart = ?,NbrDeg = ?,DatePro = ?,NameModule  = ? where IDEXM =? and IDUser = ?";
-                                predu = con.prepareStatement(query);
-                                predu.setInt(1,Integer.valueOf(nbrPar.getSelectedIndex()+2));
-                                predu.setInt(2,Integer.valueOf(NbrDeg.getSelectedIndex()+2));
-                                predu.setDate(3, new java.sql.Date(DateEXM.getDate().getTime()));
-                                predu.setString(4,NameMod.getText());
-                                predu.setInt(5,Exam.IDEAXM);
-                                predu.setInt(6,Login.id_user);
-                                predu.execute();
-                                chargeExamList();
-                                JOptionPane.showMessageDialog(null,"The UPDATE process Was SuccessFul");
-                            
-                       
-        }
-        catch(Exception e)
-        {
+        try {
+            DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd");
+            java.sql.Date examSqlDate = new java.sql.Date(DateEXM.getDate().getTime());
+            java.sql.Date nowSqlDate = java.sql.Date.valueOf(LocalDate.now());
+
+            String ModuleName = NameMod.getText();
+            if (TableEXM.getSelectionModel().isSelectionEmpty()) {
+                JOptionPane.showMessageDialog(this, "Select Row the Exam in Table ");
+                return;
+            }
+
+            if (ModuleName.length() == 0) {
+                JOptionPane.showMessageDialog(this, "Module Name is Empty");
+                return;
+            }
+            if (EditEXM.isSelected() == false) {
+                JOptionPane.showMessageDialog(this, "Must be selected  Radio Edit Exam");
+                return;
+            }
+            if (examSqlDate.before(nowSqlDate)) {
+                JOptionPane.showMessageDialog(this, "Invalid Date OR Field Empty");
+                return;
+            }
+
+            String query = "UPDATE [DB_MEMIOR].[dbo].[Exam]  SET  NbrPart = ?,NbrDeg = ?,DatePro = ?,NameModule  = ? where IDEXM =? and IDUser = ?";
+            predu = con.prepareStatement(query);
+            predu.setInt(1, Integer.valueOf(nbrPar.getSelectedIndex() + 2));
+            predu.setInt(2, Integer.valueOf(NbrDeg.getSelectedIndex() + 2));
+            predu.setDate(3, new java.sql.Date(DateEXM.getDate().getTime()));
+            predu.setString(4, NameMod.getText());
+            predu.setInt(5, exam.Id);
+            predu.setInt(6, Login.id_user);
+            predu.execute();
+            chargeExamList();
+            JOptionPane.showMessageDialog(null, "The UPDATE process Was SuccessFul");
+
+        } catch (Exception e) {
             JOptionPane.showMessageDialog(null, e.toString());
         }
     }//GEN-LAST:event_UpdateActionPerformed
-public void chargeExamList()
-{
-     try
-        {
+    public void chargeExamList() {
+        try {
             DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd");
             LocalDate localDate = LocalDate.now();
             java.sql.Date sqlDateT = java.sql.Date.valueOf(Date.valueOf(LocalDate.now()).toString());
-                            
-            if(ArchiveEXM.isSelected())
-            {
-                    String qeury = "select IDEXM,NameEXM,DatePro,NameModule,NbrPart,NbrDeg from [DB_MEMIOR].[dbo].[Exam] where DatePro < ?  and IDUser = ? ";
-                    pred = con.prepareStatement(qeury);
-                    pred.setDate(1,sqlDateT);
-                    pred.setInt(2,Login.id_user);
-                    
-                   
+
+            if (ArchiveEXM.isSelected()) {
+                String qeury = "SELECT IDEXM AS \"N°\",NameEXM AS \"Name Of Exam\",DatePro AS \"Exam Date\",NameModule AS \"Module Name\",NbrPart AS \"N° Parts\",NbrDeg AS \"N° Degree\" from [DB_MEMIOR].[dbo].[Exam] where DatePro < ?  and IDUser = ? ";
+                pred = con.prepareStatement(qeury);
+                pred.setDate(1, sqlDateT);
+                pred.setInt(2, Login.id_user);
+
+            } else {
+                String qeury = "SELECT IDEXM AS \"N°\",NameEXM AS \"Name Of Exam\",DatePro AS \"Exam Date\",NameModule AS \"Module Name\",NbrPart AS \"N° Parts\",NbrDeg AS \"N° Degree\" from [DB_MEMIOR].[dbo].[Exam] where DatePro > ? and IDUser = ?  ";
+                pred = con.prepareStatement(qeury);
+                pred.setDate(1, sqlDateT);
+                pred.setInt(2, Login.id_user);
             }
-            else
-            {
-                    String qeury = "select IDEXM,NameEXM,DatePro,NameModule,NbrPart,NbrDeg from [DB_MEMIOR].[dbo].[Exam] where DatePro > ? and IDUser = ?  ";
-                    pred = con.prepareStatement(qeury);
-                    pred.setDate(1,sqlDateT);
-                    pred.setInt(2,Login.id_user);
-            }
-             
-            Result= pred.executeQuery();
-            
-             
-               TableEXM.setModel(DbUtils.resultSetToTableModel(Result));
-              pred.close();
-              Result.close();
-        }
-        catch(SQLException | HeadlessException e)
-        {
+
+            Result = pred.executeQuery();
+
+            TableEXM.setModel(DbUtils.resultSetToTableModel(Result));
+            pred.close();
+            Result.close();
+        } catch (SQLException | HeadlessException e) {
             JOptionPane.showMessageDialog(this, e.getMessage());
         }
-}
-public javax.swing.JButton getgoedit()
-{
-    return goedit;
-}
+    }
+
+    public javax.swing.JButton getgoedit() {
+        return goedit;
+    }
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton Add;
     private javax.swing.JRadioButton AddEXM;

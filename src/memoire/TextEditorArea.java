@@ -48,16 +48,11 @@ import javax.swing.undo.UndoableEdit;
  * @author abdeljabbar
  */
 public final class TextEditorArea extends javax.swing.JEditorPane {
-private Document editorPaneDocument;
-protected UndoHandler undoHandler; 
-protected UndoManager undoManager ;
-private UndoAction undoAction = null;
-private RedoAction redoAction = null;
 
      public TextEditorArea()
     {
        super(); 
-       InitializeUndoRedo();
+       //InitializeUndoRedo();
       
        setContentType("text/HTML");
        setMinimumSize(new Dimension(0, 0)); 
@@ -130,12 +125,12 @@ private RedoAction redoAction = null;
      
    
    public void InitializeUndoRedo(){
-       editorPaneDocument = getDocument();
+    /*   editorPaneDocument = getDocument();
 editorPaneDocument.addUndoableEditListener(undoHandler);
 
         KeyStroke undoKeystroke = KeyStroke.getKeyStroke(KeyEvent.VK_Z, Event.META_MASK);
 KeyStroke redoKeystroke = KeyStroke.getKeyStroke(KeyEvent.VK_Y, Event.META_MASK);
-undoManager = new UndoManager();
+undoManager = new UndoManager();*/
 /*undoAction = new UndoAction(undoManager,redoAction);
 getInputMap().put(undoKeystroke, "undoKeystroke");
 getActionMap().put("undoKeystroke", undoAction);*/
@@ -150,10 +145,10 @@ getActionMap().put("redoKeystroke", redoAction);*/
     }
 
   public void Undo() {
-        undoManager.undo();
+      //  undoManager.undo();
     }    
     public void Redo() {
-        undoManager.redo();
+      //  undoManager.redo();
     }
   /* class MyCompoundEdit extends CompoundEdit {
         boolean isUnDone=false;

@@ -331,7 +331,7 @@ public void chargeDataList()
         }
         //Jlist acctList = new Jlist(temp);
         ListUsers.setListData(temp);
-        JOptionPane.showMessageDialog(this, "show data");
+        
         }
         catch(SQLException | HeadlessException e)
         {
